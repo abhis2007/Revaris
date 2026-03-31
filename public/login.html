@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Login — RestaurantIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0e;--bg2:#111118;--surface:#1a1a26;--accent:#f5a623;--accent2:#e8436a;--text:#f0eff4;--text2:#9897a9;--text3:#45445a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif}
+    body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:420px;margin:20px}
+    .logo{font-family:var(--font-d);font-size:20px;font-weight:800;background:linear-gradient(135deg,#f5a623,#e8436a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+    h1{font-family:var(--font-d);font-size:24px;font-weight:700;text-align:center;margin-bottom:6px}
+    .sub{font-size:14px;color:var(--text3);text-align:center;margin-bottom:32px}
+    .field{margin-bottom:16px}
+    label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:0.04em}
+    input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none;transition:border-color 0.2s}
+    input:focus{border-color:var(--accent)}
+    .btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;font-family:var(--font-d);font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;transition:opacity 0.2s}
+    .btn:hover{opacity:0.88}
+    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:14px;display:none}
+    .link-row{text-align:center;margin-top:20px;font-size:13px;color:var(--text3)}
+    .link-row a{color:var(--accent);text-decoration:none;font-weight:500}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🍽 RestaurantIQ</div>
+  <h1>Welcome back</h1>
+  <div class="sub">Sign in to your dashboard</div>
+  <div class="error" id="err"></div>
+  <div class="field"><label>Email</label><input type="email" id="email" placeholder="you@restaurant.com" autocomplete="email"/></div>
+  <div class="field"><label>Password</label><input type="password" id="password" placeholder="Your password" autocomplete="current-password"/></div>
+  <button class="btn" id="btn" onclick="login()">Sign In</button>
+  <div class="link-row">Don't have an account? <a href="/register">Sign up free</a></div>
+</div>
+<script>
+async function login() {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('btn');
+  const err      = document.getElementById('err');
+  if (!email || !password) { showErr('Please fill in all fields'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password }), credentials:'include'
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr(data.error || 'Login failed'); return; }
+    localStorage.setItem('session', data.token);
+    window.location.href = '/dashboard';
+  } catch(e) { showErr('Network error — is the server running?'); }
+  finally { btn.disabled=false; btn.textContent='Sign In'; }
+}
+function showErr(msg) {
+  const e = document.getElementById('err');
+  e.textContent = msg; e.style.display = 'block';
+}
+document.addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+</script>
+</body>
+</html>

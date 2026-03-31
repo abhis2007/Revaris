@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Register — RestaurantIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0e;--bg2:#111118;--surface:#1a1a26;--accent:#f5a623;--accent2:#e8436a;--text:#f0eff4;--text2:#9897a9;--text3:#45445a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--green:#4ade80;--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif}
+    body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:480px}
+    .logo{font-family:var(--font-d);font-size:20px;font-weight:800;background:linear-gradient(135deg,#f5a623,#e8436a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+    h1{font-family:var(--font-d);font-size:24px;font-weight:700;text-align:center;margin-bottom:6px}
+    .sub{font-size:14px;color:var(--text3);text-align:center;margin-bottom:32px}
+
+    /* Steps */
+    .steps{display:flex;gap:0;margin-bottom:32px;position:relative}
+    .step{flex:1;text-align:center;position:relative}
+    .step-dot{width:28px;height:28px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:0 auto 6px;transition:all 0.3s;color:var(--text3)}
+    .step.active .step-dot{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff}
+    .step.done .step-dot{background:var(--green);border:none;color:#000}
+    .step-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+    .step.active .step-label{color:var(--accent)}
+    .steps::before{content:'';position:absolute;top:14px;left:14%;right:14%;height:1px;background:var(--border);z-index:0}
+
+    .panel{display:none} .panel.active{display:block}
+
+    .field{margin-bottom:16px}
+    label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:0.04em}
+    input,select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none;transition:border-color 0.2s}
+    input:focus,select:focus{border-color:var(--accent)}
+    select option{background:var(--surface)}
+
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    .btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;font-family:var(--font-d);font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;transition:opacity 0.2s}
+    .btn:hover{opacity:0.88}
+    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);margin-top:0}
+    .btn-outline:hover{border-color:var(--text2)}
+
+    .error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:14px;display:none}
+    .success-block{text-align:center;padding:20px 0}
+    .success-icon{font-size:48px;margin-bottom:16px}
+    .link-row{text-align:center;margin-top:20px;font-size:13px;color:var(--text3)}
+    .link-row a{color:var(--accent);text-decoration:none;font-weight:500}
+
+    .plan-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+    .plan-chip{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 10px;cursor:pointer;text-align:center;transition:all 0.2s}
+    .plan-chip:hover,.plan-chip.selected{border-color:var(--accent);background:rgba(245,166,35,0.07)}
+    .plan-chip-name{font-family:var(--font-d);font-size:14px;font-weight:700;margin-bottom:3px}
+    .plan-chip-price{font-size:11px;color:var(--text3)}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🍽 RestaurantIQ</div>
+  <h1>Create your account</h1>
+  <div class="sub">Start tracking your restaurant reviews in 2 minutes</div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step active" id="s1"><div class="step-dot">1</div><div class="step-label">Account</div></div>
+    <div class="step" id="s2"><div class="step-dot">2</div><div class="step-label">Business</div></div>
+    <div class="step" id="s3"><div class="step-dot">3</div><div class="step-label">Plan</div></div>
+  </div>
+
+  <div class="error" id="err"></div>
+
+  <!-- Step 1: Account -->
+  <div class="panel active" id="p1">
+    <div class="field"><label>Your Name</label><input type="text" id="name" placeholder="Rahul Sharma"/></div>
+    <div class="field"><label>Email Address</label><input type="email" id="email" placeholder="rahul@restaurant.com"/></div>
+    <div class="field"><label>Password</label><input type="password" id="password" placeholder="Min 6 characters"/></div>
+    <button class="btn" onclick="nextStep1()">Continue →</button>
+    <div class="link-row">Already registered? <a href="/login">Sign in</a></div>
+  </div>
+
+  <!-- Step 2: Business -->
+  <div class="panel" id="p2">
+    <div class="field"><label>Restaurant Name</label><input type="text" id="businessName" placeholder="Spice Garden"/></div>
+    <div class="field"><label>Location / Area</label><input type="text" id="location" placeholder="Sector 18, Noida"/></div>
+    <div class="field">
+      <label>Google Maps Place ID <span style="color:var(--text3);font-weight:400">(optional — we'll search if blank)</span></label>
+      <input type="text" id="placeId" placeholder="ChIJ... (from Google Maps URL)"/>
+    </div>
+    <div class="row">
+      <button class="btn btn-outline" onclick="prevStep(1)">← Back</button>
+      <button class="btn" onclick="nextStep2()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Plan -->
+  <div class="panel" id="p3">
+    <div class="field">
+      <label>Choose Your Plan</label>
+      <div class="plan-chips">
+        <div class="plan-chip selected" onclick="selectPlan('starter', this)">
+          <div class="plan-chip-name">Starter</div>
+          <div class="plan-chip-price">₹999/mo</div>
+        </div>
+        <div class="plan-chip" onclick="selectPlan('pro', this)">
+          <div class="plan-chip-name">Pro</div>
+          <div class="plan-chip-price">₹2,499/mo</div>
+        </div>
+        <div class="plan-chip" onclick="selectPlan('enterprise', this)">
+          <div class="plan-chip-name">Enterprise</div>
+          <div class="plan-chip-price">₹7,999/mo</div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Digest Day</label>
+      <select id="digestDay">
+        <option value="monday">Monday</option>
+        <option value="wednesday">Wednesday</option>
+        <option value="friday">Friday</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn btn-outline" onclick="prevStep(2)">← Back</button>
+      <button class="btn" id="regBtn" onclick="register()">Create Account 🚀</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="panel" id="p4">
+    <div class="success-block">
+      <div class="success-icon">🎉</div>
+      <h2 style="font-family:var(--font-d);font-size:22px;margin-bottom:8px">You're in!</h2>
+      <p style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:24px">Your account is created. Your first weekly digest will be sent on the next <span id="digestDayLabel"></span>. You can also generate one on-demand from your dashboard.</p>
+      <a href="/dashboard" class="btn" style="display:inline-block;text-decoration:none;width:auto;padding:12px 32px">Go to Dashboard →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedPlan = 'starter';
+
+  function goStep(n) {
+    [1,2,3,4].forEach(i => {
+      document.getElementById('p'+i).classList.toggle('active', i===n);
+      const s = document.getElementById('s'+i);
+      if(s) { s.classList.toggle('active', i===n); s.classList.toggle('done', i<n); }
+    });
+  }
+
+  function nextStep1() {
+    const name=document.getElementById('name').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const pass=document.getElementById('password').value;
+    if(!name||!email||!pass){showErr('Please fill all fields');return;}
+    if(pass.length<6){showErr('Password must be at least 6 characters');return;}
+    clearErr(); goStep(2);
+  }
+
+  function nextStep2() {
+    const biz=document.getElementById('businessName').value.trim();
+    const loc=document.getElementById('location').value.trim();
+    if(!biz){showErr('Restaurant name is required');return;}
+    clearErr(); goStep(3);
+  }
+
+  function prevStep(n) { clearErr(); goStep(n); }
+
+  function selectPlan(plan, el) {
+    selectedPlan = plan;
+    document.querySelectorAll('.plan-chip').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  async function register() {
+    const btn = document.getElementById('regBtn');
+    btn.disabled=true; btn.textContent='Creating account…';
+    const payload = {
+      name:         document.getElementById('name').value.trim(),
+      email:        document.getElementById('email').value.trim(),
+      password:     document.getElementById('password').value,
+      businessName: document.getElementById('businessName').value.trim(),
+      location:     document.getElementById('location').value.trim(),
+      placeId:      document.getElementById('placeId').value.trim() || null,
+      plan:         selectedPlan,
+      digestDay:    document.getElementById('digestDay').value
+    };
+    try {
+      const res = await fetch('/api/auth/register', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload), credentials:'include'
+      });
+      const data = await res.json();
+      if(!res.ok){showErr(data.error||'Registration failed');return;}
+      localStorage.setItem('session', data.token);
+      document.getElementById('digestDayLabel').textContent = payload.digestDay;
+      goStep(4);
+    } catch(e){ showErr('Network error'); }
+    finally { btn.disabled=false; btn.textContent='Create Account 🚀'; }
+  }
+
+  function showErr(msg){const e=document.getElementById('err');e.textContent=msg;e.style.display='block';}
+  function clearErr(){document.getElementById('err').style.display='none';}
+</script>
+</body>
+</html>

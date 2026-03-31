@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard — RestaurantIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0e;--bg2:#111118;--surface:#1a1a26;--accent:#f5a623;--accent2:#e8436a;--text:#f0eff4;--text2:#9897a9;--text3:#45445a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--green:#4ade80;--red:#f87171;--amber:#fbbf24;--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif}
+    body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;display:grid;grid-template-columns:240px 1fr;overflow:hidden;height:100vh}
+
+    /* Sidebar */
+    .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;overflow-y:auto}
+    .logo{font-family:var(--font-d);font-size:18px;font-weight:800;background:linear-gradient(135deg,#f5a623,#e8436a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:32px;padding:0 8px}
+    .org-chip{background:var(--surface);border-radius:10px;padding:12px;margin-bottom:24px}
+    .org-name{font-family:var(--font-d);font-size:13px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .org-plan{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent)}
+    .nav-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;padding:0 8px;margin-bottom:8px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+    .nav-item:hover{background:var(--surface);color:var(--text)}
+    .nav-item.active{background:rgba(245,166,35,0.1);color:var(--accent)}
+    .sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+
+    /* Main */
+    .main{overflow-y:auto;padding:28px 32px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .page-title{font-family:var(--font-d);font-size:22px;font-weight:700}
+    .page-sub{font-size:13px;color:var(--text3);margin-top:3px}
+    .btn{padding:9px 20px;border-radius:8px;font-family:var(--font-d);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+    .btn-primary:hover{opacity:0.88}
+    .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+    .btn-ghost{background:var(--surface);border:1px solid var(--border2);color:var(--text2)}
+
+    /* Stats row */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+    .stat-card.accent{border-color:rgba(245,166,35,0.2);background:rgba(245,166,35,0.04)}
+    .stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:8px}
+    .stat-value{font-family:var(--font-d);font-size:28px;font-weight:700}
+    .stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+    /* Panel system */
+    .panel{display:none} .panel.active{display:block}
+
+    /* Digest card */
+    .digest-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px}
+    .digest-card-header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+    .digest-card-header:hover{background:rgba(255,255,255,0.02)}
+    .digest-week{font-family:var(--font-d);font-size:15px;font-weight:700}
+    .digest-date{font-size:12px;color:var(--text3);margin-top:2px}
+    .digest-badges{display:flex;gap:8px;align-items:center}
+    .badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:0.06em}
+    .badge-sent{background:rgba(74,222,128,0.1);color:#4ade80}
+    .badge-pending{background:rgba(251,191,36,0.1);color:#fbbf24}
+    .digest-body{padding:20px 22px;display:none}
+
+    .insight-section{margin-bottom:20px}
+    .insight-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px}
+    .issue-item{display:flex;gap:10px;padding:10px 14px;background:rgba(232,67,106,0.05);border:1px solid rgba(232,67,106,0.15);border-radius:8px;margin-bottom:8px;font-size:13px;color:var(--text2)}
+    .issue-num{color:var(--accent2);font-weight:700;min-width:20px}
+    .action-item{display:flex;gap:10px;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:8px}
+    .action-prio{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;min-width:52px;text-align:center}
+    .prio-high{background:rgba(248,113,113,0.15);color:#f87171}
+    .prio-medium{background:rgba(251,191,36,0.15);color:#fbbf24}
+    .prio-low{background:rgba(74,222,128,0.15);color:#4ade80}
+    .action-text{font-size:13px;color:var(--text2);flex:1}
+    .summary-box{background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+
+    /* Empty/loading states */
+    .empty{text-align:center;padding:60px 20px;color:var(--text3)}
+    .empty-icon{font-size:40px;margin-bottom:12px}
+    .loader{width:28px;height:28px;border:3px solid var(--surface);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:40px auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Toast */
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;max-width:320px}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{border-color:rgba(74,222,128,0.3);color:#4ade80}
+    .toast.error{border-color:rgba(248,113,113,0.3);color:#f87171}
+
+    /* Business / GMB panel */
+    .connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;max-width:480px;margin:0 auto}
+    .connect-icon{font-size:48px;margin-bottom:16px}
+    .connect-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:8px}
+    .connect-sub{font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:24px}
+    .btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;border:none;border-radius:10px;font-family:var(--font-b);font-size:14px;font-weight:600;color:#1a1a1a;cursor:pointer;transition:opacity 0.2s}
+    .btn-google:hover{opacity:0.9}
+    .btn-google svg{width:20px;height:20px}
+    .connected-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#4ade80;margin-bottom:20px}
+    .account-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
+    .account-card:hover{border-color:rgba(255,255,255,0.2)}
+    .account-card.selected{border-color:var(--accent);background:rgba(245,166,35,0.04)}
+    .account-name{font-family:var(--font-d);font-size:14px;font-weight:600}
+    .account-type{font-size:11px;color:var(--text3);margin-top:2px}
+    .location-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
+    .location-card:hover,.location-card.selected{border-color:var(--accent)}
+    .review-row{background:var(--bg3,#1a1a26);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+    .review-row-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .reviewer-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+    .reviewer-name{font-size:13px;font-weight:600;color:var(--text)}
+    .reviewer-time{font-size:11px;color:var(--text3)}
+    .review-stars{color:#fbbf24;font-size:12px;margin-left:auto}
+    .review-text{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+    .reply-box{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:100%;padding:10px 12px;color:var(--text);font-family:var(--font-b);font-size:13px;outline:none;resize:vertical;min-height:72px}
+    .reply-box:focus{border-color:var(--accent)}
+    .reply-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    .btn-sm{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-b);transition:all 0.15s}
+    .btn-approve{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+    .btn-regen{background:var(--surface);border:1px solid var(--border2);color:var(--text2)}
+    .btn-reject{background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)}
+    .posted-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#4ade80;background:rgba(74,222,128,0.1);padding:3px 9px;border-radius:4px}
+    .section-divider{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin:20px 0 10px}
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">🍽 RestaurantIQ</div>
+  <div class="org-chip">
+    <div class="org-name" id="orgName">Loading…</div>
+    <div class="org-plan" id="orgPlan">starter</div>
+  </div>
+  <div class="nav-label">Menu</div>
+  <button class="nav-item active" onclick="showPanel('overview', this)">📊 Overview</button>
+  <button class="nav-item" onclick="showPanel('digests', this)">📧 Digests</button>
+  <button class="nav-item" onclick="showPanel('business', this)">🏪 Business</button>
+  <button class="nav-item" onclick="showPanel('settings', this)">⚙ Settings</button>
+  <div class="sidebar-footer">
+    <button class="nav-item" onclick="logout()">← Logout</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Overview panel -->
+  <div class="panel active" id="panel-overview">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Overview</div>
+        <div class="page-sub" id="overviewSub">Loading your restaurant data…</div>
+      </div>
+      <button class="btn btn-primary" id="genBtn" onclick="generateDigest()">⚡ Generate Digest Now</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Current Rating</div>
+        <div class="stat-value" id="statRating">—</div>
+        <div class="stat-sub" id="statTrend">Loading…</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Reviews</div>
+        <div class="stat-value" id="statReviews">—</div>
+        <div class="stat-sub">on Google Maps</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Digest</div>
+        <div class="stat-value" id="statLastDigest" style="font-size:16px;padding-top:6px">—</div>
+        <div class="stat-sub" id="statEmailSent">—</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-label">Open Issues</div>
+        <div class="stat-value" id="statIssues" style="color:var(--accent2)">—</div>
+        <div class="stat-sub">unaddressed</div>
+      </div>
+    </div>
+
+    <!-- Latest digest summary -->
+    <div id="latestDigestZone">
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- Digests panel -->
+  <div class="panel" id="panel-digests">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Digest History</div>
+        <div class="page-sub">All weekly reports for your restaurant</div>
+      </div>
+      <button class="btn btn-primary" onclick="generateDigest()">⚡ Generate Now</button>
+    </div>
+    <div id="digestList"><div class="loader"></div></div>
+  </div>
+
+  <!-- Business / GMB panel -->
+  <div class="panel" id="panel-business">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Business Connection</div>
+        <div class="page-sub">Connect your Google Business Profile to fetch reviews and post replies</div>
+      </div>
+    </div>
+
+    <!-- Not connected state -->
+    <div id="gmbNotConnected">
+      <div class="connect-card">
+        <div class="connect-icon">🔗</div>
+        <div class="connect-title">Connect Google Business Profile</div>
+        <div class="connect-sub">
+          Authorize RestaurantIQ to read your Google Maps reviews and post owner replies on your behalf.<br><br>
+          <strong style="color:var(--text)">What we access:</strong><br>
+          Your business listings · Customer reviews · Reply to reviews
+        </div>
+        <button class="btn-google" onclick="connectGoogle()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Connect with Google
+        </button>
+        <p style="font-size:11px;color:var(--text3);margin-top:16px">
+          You will be redirected to Google to grant permissions.<br>We never store your Google password.
+        </p>
+      </div>
+    </div>
+
+    <!-- Connected state -->
+    <div id="gmbConnected" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div class="connected-badge">✓ Google Business Connected</div>
+        <button class="btn btn-ghost btn-sm" onclick="disconnectGoogle()" style="font-size:12px;padding:6px 14px">Disconnect</button>
+      </div>
+
+      <!-- Step 1: Select Account -->
+      <div id="gmbStep1">
+        <div class="section-divider">Step 1 — Select your business account</div>
+        <div id="accountsList"><div class="loader"></div></div>
+      </div>
+
+      <!-- Step 2: Select Location -->
+      <div id="gmbStep2" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <button class="btn-sm btn-regen" onclick="backToAccounts()">← Back</button>
+          <div class="section-divider" style="margin:0">Step 2 — Select your restaurant location</div>
+        </div>
+        <div id="locationsList"><div class="loader"></div></div>
+      </div>
+
+      <!-- Step 3: Reviews + Replies -->
+      <div id="gmbStep3" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="btn-sm btn-regen" onclick="backToLocations()">← Back</button>
+            <div class="section-divider" style="margin:0">Reviews & Replies</div>
+          </div>
+          <button class="btn btn-primary" style="font-size:12px;padding:7px 16px" onclick="loadReviews()">↻ Refresh Reviews</button>
+        </div>
+
+        <!-- Pending replies tab -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0">
+          <button class="mtab active" id="tabPending" onclick="switchReviewTab('pending',this)">⏳ Pending Replies</button>
+          <button class="mtab" id="tabAll" onclick="switchReviewTab('all',this)">📋 All Reviews</button>
+        </div>
+
+        <div id="pendingRepliesZone"><div class="loader"></div></div>
+        <div id="allReviewsZone" style="display:none"><div class="loader"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings panel -->
+  <div class="panel" id="panel-settings">
+    <div class="topbar">
+      <div class="page-title">Settings</div>
+    </div>
+    <div style="max-width:520px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em">Business Details</div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:12px;color:var(--text3);margin-bottom:5px">Restaurant Name</label>
+          <input id="settingBiz" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none" placeholder="Your restaurant name"/>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:12px;color:var(--text3);margin-bottom:5px">Location</label>
+          <input id="settingLoc" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none" placeholder="Sector 18, Noida"/>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:12px;color:var(--text3);margin-bottom:5px">Google Maps Place ID <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+          <input id="settingPlaceId" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none" placeholder="ChIJ..."/>
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:12px;color:var(--text3);margin-bottom:5px">Weekly Digest Day</label>
+          <select id="settingDay" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-family:var(--font-b);font-size:14px;outline:none">
+            <option value="monday">Monday</option>
+            <option value="wednesday">Wednesday</option>
+            <option value="friday">Friday</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+      </div>
+      <div style="background:var(--bg2);border:1px solid rgba(248,113,113,0.15);border-radius:16px;padding:24px">
+        <div style="font-size:13px;font-weight:600;color:#f87171;margin-bottom:8px">Subscription</div>
+        <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Your plan: <strong style="color:var(--text)" id="planDisplay">Starter</strong></p>
+        <button class="btn" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)" onclick="if(confirm('Cancel subscription?')) toast('Contact support@restaurantiq.in to cancel', 'error')">Cancel Subscription</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let orgData = null;
+let allDigests = [];
+
+// ── Init ─────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res  = await apiFetch('/api/auth/me');
+    orgData    = res.org;
+    document.getElementById('orgName').textContent  = orgData.businessName || orgData.name;
+    document.getElementById('orgPlan').textContent  = orgData.plan?.toUpperCase() || 'STARTER';
+    document.getElementById('overviewSub').textContent = orgData.businessName + ' · ' + orgData.location;
+    document.getElementById('planDisplay').textContent = orgData.plan || 'Starter';
+    document.getElementById('settingBiz').value     = orgData.businessName || '';
+    document.getElementById('settingLoc').value     = orgData.location || '';
+    document.getElementById('settingPlaceId').value = orgData.placeId || '';
+    document.getElementById('settingDay').value     = orgData.digestDay || 'monday';
+    await loadDigests();
+  } catch(e) {
+    window.location.href = '/login';
+  }
+}
+
+// ── Load digests ──────────────────────────────────────────────────────
+async function loadDigests() {
+  const res  = await apiFetch('/api/org/digest');
+  allDigests = res.digests || [];
+  renderOverview();
+  renderDigestList();
+}
+
+function renderOverview() {
+  if (allDigests.length === 0) {
+    document.getElementById('statRating').textContent    = '—';
+    document.getElementById('statReviews').textContent   = '—';
+    document.getElementById('statLastDigest').textContent= 'Never';
+    document.getElementById('statEmailSent').textContent = 'Generate your first digest';
+    document.getElementById('statIssues').textContent    = '—';
+    document.getElementById('latestDigestZone').innerHTML= `
+      <div class="empty">
+        <div class="empty-icon">📊</div>
+        <p style="font-size:15px;color:var(--text);margin-bottom:8px">No digests yet</p>
+        <p>Click "Generate Digest Now" to pull your first week's insights from Google Maps.</p>
+      </div>`;
+    return;
+  }
+
+  const latest = allDigests[0];
+  const d = latest.data;
+  const rating = d.place?.rating;
+  const rColor = rating >= 4 ? '#4ade80' : rating >= 3 ? '#fbbf24' : '#f87171';
+
+  document.getElementById('statRating').textContent    = rating ? rating.toFixed(1) + '★' : '—';
+  document.getElementById('statRating').style.color   = rColor;
+  document.getElementById('statReviews').textContent  = (d.place?.total_reviews || 0).toLocaleString();
+  document.getElementById('statLastDigest').textContent= fmtDate(latest.createdAt);
+  document.getElementById('statEmailSent').textContent= latest.emailSent ? '✓ Email sent' : 'In dashboard only';
+  document.getElementById('statTrend').textContent    = d.insight?.rating_summary?.trend || '';
+  document.getElementById('statIssues').textContent   = (d.insight?.unaddressed_issues || []).length;
+
+  document.getElementById('latestDigestZone').innerHTML = buildDigestDetail(latest, true);
+}
+
+function renderDigestList() {
+  const el = document.getElementById('digestList');
+  if (!allDigests.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>No digests yet. Generate your first one!</p></div>`;
+    return;
+  }
+  el.innerHTML = allDigests.map((d, i) => buildDigestCard(d, i === 0)).join('');
+}
+
+function buildDigestCard(digest, expanded) {
+  const d = digest.data;
+  const weekLabel = `Week ${d.weekNumber || '—'}`;
+  const dateLabel = fmtDate(digest.createdAt);
+  const issues = d.insight?.unaddressed_issues || [];
+  const actions = d.insight?.action_items || [];
+
+  return `
+  <div class="digest-card">
+    <div class="digest-card-header" onclick="toggleDigest(this)">
+      <div>
+        <div class="digest-week">${weekLabel} · ${d.businessName || ''}</div>
+        <div class="digest-date">${dateLabel} · ${d.place?.rating?.toFixed(1) || '—'}★ · ${issues.length} issues</div>
+      </div>
+      <div class="digest-badges">
+        <span class="badge ${digest.emailSent ? 'badge-sent' : 'badge-pending'}">${digest.emailSent ? 'Email Sent' : 'In App'}</span>
+        <span style="color:var(--text3);font-size:16px">${expanded ? '▲' : '▼'}</span>
+      </div>
+    </div>
+    <div class="digest-body" style="display:${expanded ? 'block' : 'none'}">
+      ${buildDigestDetail(digest, false)}
+    </div>
+  </div>`;
+}
+
+function buildDigestDetail(digest, forOverview) {
+  const d = digest.data;
+  const insight = d.insight || {};
+  const issues  = insight.unaddressed_issues || [];
+  const actions = insight.action_items || [];
+  const positives = insight.top_positives || [];
+
+  const issuesHtml = issues.map((iss, i) => `
+    <div class="issue-item">
+      <span class="issue-num">#${i+1}</span>
+      <span>${escHtml(iss)}</span>
+    </div>`).join('') || '<p style="color:var(--text3);font-size:13px">No unaddressed issues found.</p>';
+
+  const actionsHtml = actions.map(a => `
+    <div class="action-item">
+      <span class="action-prio prio-${a.priority||'medium'}">${(a.priority||'medium').toUpperCase()}</span>
+      <div class="action-text">
+        <div>${escHtml(a.action)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${escHtml(a.expected_impact||'')}</div>
+      </div>
+    </div>`).join('');
+
+  const positivesHtml = positives.map(p => `<div style="font-size:13px;color:#4ade80;padding:4px 0;display:flex;gap:8px"><span>✓</span><span>${escHtml(p)}</span></div>`).join('');
+
+  return `
+    ${insight.executive_summary ? `<div class="summary-box"><strong>Summary:</strong> ${escHtml(insight.executive_summary)}</div>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-family:var(--font-d);font-size:24px;font-weight:700;color:${(d.place?.rating||0)>=4?'#4ade80':(d.place?.rating||0)>=3?'#fbbf24':'#f87171'}">${d.place?.rating?.toFixed(1)||'—'}★</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Rating · ${(d.place?.total_reviews||0).toLocaleString()} reviews</div>
+      </div>
+      <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px">${{improving:'📈',stable:'➡️',declining:'📉'}[insight.rating_summary?.trend]||'➡️'}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:4px;text-transform:capitalize">${insight.rating_summary?.trend||'stable'}</div>
+        <div style="font-size:11px;color:var(--text3)">Trend</div>
+      </div>
+    </div>
+    <div class="insight-section">
+      <div class="insight-title">⚠ Unaddressed Issues</div>
+      ${issuesHtml}
+    </div>
+    ${actionsHtml ? `<div class="insight-section"><div class="insight-title">🎯 Recommended Actions</div>${actionsHtml}</div>` : ''}
+    ${positivesHtml ? `<div class="insight-section"><div class="insight-title">✅ What Customers Love</div>${positivesHtml}</div>` : ''}
+    ${insight.competitor_alert ? `<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text2)"><strong style="color:#fbbf24">🔍 Competitor Alert:</strong> ${escHtml(insight.competitor_alert)}</div>` : ''}
+  `;
+}
+
+// ── Generate digest ───────────────────────────────────────────────────
+async function generateDigest() {
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+  try {
+    const res = await apiFetch('/api/org/digest/generate', 'POST');
+    toast('Digest generated! ' + (res.emailSent ? 'Email sent ✓' : 'Check dashboard.'), 'success');
+    await loadDigests();
+  } catch(e) {
+    toast('Failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Generate Digest Now';
+  }
+}
+
+// ── Settings ──────────────────────────────────────────────────────────
+async function saveSettings() {
+  try {
+    await apiFetch('/api/org/profile', 'POST', {
+      businessName: document.getElementById('settingBiz').value.trim(),
+      location:     document.getElementById('settingLoc').value.trim(),
+      placeId:      document.getElementById('settingPlaceId').value.trim() || null,
+      digestDay:    document.getElementById('settingDay').value
+    });
+    toast('Settings saved!', 'success');
+  } catch(e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+// ── Logout ────────────────────────────────────────────────────────────
+async function logout() {
+  await apiFetch('/api/auth/logout', 'POST').catch(()=>{});
+  localStorage.removeItem('session');
+  window.location.href = '/login';
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────
+function showPanel(name, navEl) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(navEl) navEl.classList.add('active');
+}
+
+function toggleDigest(headerEl) {
+  const body = headerEl.nextElementSibling;
+  const arrow = headerEl.querySelector('span:last-child');
+  const open  = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  arrow.textContent  = open ? '▼' : '▲';
+}
+
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'toast show ' + type;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── API fetch wrapper ─────────────────────────────────────────────────
+async function apiFetch(url, method='GET', body=null) {
+  const token = localStorage.getItem('session');
+  const opts  = {
+    method, credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...(token ? {'x-session-token': token} : {}) }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res  = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+init();
+
+// ══════════════════════════════════════════════════════════════════════
+// GMB / Business panel logic
+// ══════════════════════════════════════════════════════════════════════
+let selectedAccount  = null;
+let selectedLocation = null;
+let allReviews       = [];
+let pendingReplies   = [];
+
+// Called when Business panel opens
+async function initBusinessPanel() {
+  const tokens = db_gmbConnected;
+  if (tokens) {
+    showGmbConnected();
+    await loadAccounts();
+  } else {
+    showGmbNotConnected();
+  }
+}
+
+// Check URL params on load for OAuth redirect results
+function checkOAuthResult() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('gmb_connected')) {
+    toast('✓ Google Business connected successfully!', 'success');
+    db_gmbConnected = true;
+    window.history.replaceState({}, '', '/dashboard');
+  }
+  if (params.get('gmb_error')) {
+    toast('OAuth error: ' + params.get('gmb_error'), 'error');
+    window.history.replaceState({}, '', '/dashboard');
+  }
+}
+
+let db_gmbConnected = false;
+
+
+
+function showGmbConnected() {
+  document.getElementById('gmbNotConnected').style.display = 'none';
+  document.getElementById('gmbConnected').style.display    = 'block';
+}
+
+function showGmbNotConnected() {
+  document.getElementById('gmbNotConnected').style.display = 'block';
+  document.getElementById('gmbConnected').style.display    = 'none';
+}
+
+// ── Connect / Disconnect ──────────────────────────────────────────────
+function connectGoogle() {
+  window.location.href = '/api/oauth/connect';
+}
+
+async function disconnectGoogle() {
+  if (!confirm('Disconnect your Google Business account?')) return;
+  await apiFetch('/api/oauth/disconnect', 'POST');
+  db_gmbConnected = false;
+  showGmbNotConnected();
+  toast('Google Business disconnected', '');
+}
+
+// ── Step 1: Load accounts ─────────────────────────────────────────────
+async function loadAccounts() {
+  const el = document.getElementById('accountsList');
+  el.innerHTML = '<div class="loader"></div>';
+  document.getElementById('gmbStep1').style.display = 'block';
+  document.getElementById('gmbStep2').style.display = 'none';
+  document.getElementById('gmbStep3').style.display = 'none';
+
+  try {
+    const data = await apiFetch('/api/gmb/accounts');
+    const accounts = data.accounts || [];
+
+    if (!accounts.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">🏪</div><p>No Google Business accounts found for this Google account.</p></div>';
+      return;
+    }
+
+    el.innerHTML = accounts.map(acc => `
+      <div class="account-card" onclick="selectAccount('${escHtml(acc.name)}', '${escHtml(acc.accountName || acc.name)}', this)">
+        <div class="account-name">${escHtml(acc.accountName || acc.name)}</div>
+        <div class="account-type">${escHtml(acc.type || 'Business Account')} · ${escHtml(acc.name)}</div>
+      </div>
+    `).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
+  }
+}
+
+// ── Step 2: Select account → load locations ────────────────────────────
+async function selectAccount(accountName, displayName, el) {
+  document.querySelectorAll('.account-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAccount = accountName;
+
+  document.getElementById('gmbStep1').style.display = 'none';
+  document.getElementById('gmbStep2').style.display = 'block';
+
+  const locEl = document.getElementById('locationsList');
+  locEl.innerHTML = '<div class="loader"></div>';
+
+  try {
+    const data      = await apiFetch(`/api/gmb/locations?accountName=${encodeURIComponent(accountName)}`);
+    const locations = data.locations || [];
+
+    if (!locations.length) {
+      locEl.innerHTML = '<div class="empty"><p>No locations found for this account.</p></div>';
+      return;
+    }
+
+    locEl.innerHTML = locations.map(loc => {
+      const address = loc.storefrontAddress
+        ? [loc.storefrontAddress.addressLines?.[0], loc.storefrontAddress.locality].filter(Boolean).join(', ')
+        : '';
+      return `
+        <div class="location-card" onclick="selectLocation('${escHtml(loc.name)}', '${escHtml(loc.title)}', this)">
+          <div class="account-name">${escHtml(loc.title)}</div>
+          <div class="account-type">${escHtml(address)} · ${escHtml(loc.name)}</div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    locEl.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
+  }
+}
+
+function backToAccounts() {
+  document.getElementById('gmbStep1').style.display = 'block';
+  document.getElementById('gmbStep2').style.display = 'none';
+}
+
+// ── Step 3: Select location → load reviews ─────────────────────────────
+async function selectLocation(locationName, displayName, el) {
+  document.querySelectorAll('.location-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedLocation = locationName;
+
+  document.getElementById('gmbStep2').style.display = 'none';
+  document.getElementById('gmbStep3').style.display = 'block';
+
+  await loadReviews();
+}
+
+function backToLocations() {
+  document.getElementById('gmbStep2').style.display = 'block';
+  document.getElementById('gmbStep3').style.display = 'none';
+}
+
+async function loadReviews() {
+  document.getElementById('pendingRepliesZone').innerHTML = '<div class="loader"></div>';
+  document.getElementById('allReviewsZone').innerHTML     = '<div class="loader"></div>';
+
+  try {
+    const params = `accountName=${encodeURIComponent(selectedAccount)}&locationId=${encodeURIComponent(selectedLocation)}`;
+    const data   = await apiFetch('/api/gmb/reviews?' + params);
+    allReviews   = data.reviews || [];
+
+    const pendingData = await apiFetch('/api/gmb/pending-replies');
+    pendingReplies    = pendingData.replies || [];
+
+    renderPendingReplies();
+    renderAllReviews();
+
+    if (data.pending_suggestions > 0) {
+      toast(`AI generated ${data.pending_suggestions} reply suggestions`, 'success');
+    }
+  } catch(e) {
+    document.getElementById('pendingRepliesZone').innerHTML =
+      `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
+  }
+}
+
+// ── Render pending AI reply suggestions ───────────────────────────────
+function renderPendingReplies() {
+  const el      = document.getElementById('pendingRepliesZone');
+  const pending = pendingReplies.filter(r => r.status === 'pending');
+
+  if (!pending.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>No pending replies. All reviews have been responded to.</p></div>';
+    return;
+  }
+
+  el.innerHTML = pending.map(r => {
+    const stars   = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const avatarC = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'][r.reviewerName.charCodeAt(0) % 5];
+    const initials= r.reviewerName.slice(0,2).toUpperCase();
+
+    return `
+    <div class="review-row" id="reply_${r.id}">
+      <div class="review-row-header">
+        <div class="reviewer-avatar" style="background:${avatarC}">${initials}</div>
+        <div>
+          <div class="reviewer-name">${escHtml(r.reviewerName)}</div>
+        </div>
+        <div class="review-stars">${stars} ${r.rating}/5</div>
+      </div>
+      <div class="review-text">"${escHtml(r.reviewText)}"</div>
+
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:6px">
+        🤖 AI Suggested Reply
+      </div>
+      <textarea class="reply-box" id="replyText_${r.id}">${escHtml(r.suggestedReply)}</textarea>
+      <div class="reply-actions">
+        <button class="btn-sm btn-approve" onclick="approveReply('${r.id}')">✓ Post Reply</button>
+        <button class="btn-sm btn-regen"   onclick="regenReply('${r.id}')">↻ Regenerate</button>
+        <button class="btn-sm btn-reject"  onclick="rejectReply('${r.id}')">✕ Dismiss</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Render all reviews ────────────────────────────────────────────────
+function renderAllReviews() {
+  const el = document.getElementById('allReviewsZone');
+  if (!allReviews.length) {
+    el.innerHTML = '<div class="empty"><p>No reviews found for this location.</p></div>';
+    return;
+  }
+
+  el.innerHTML = allReviews.map(r => {
+    const rating  = starRatingMap[r.starRating] || 3;
+    const stars   = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const name    = r.reviewer?.displayName || 'Anonymous';
+    const avatarC = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'][name.charCodeAt(0) % 5];
+    const hasReply= !!r.reviewReply;
+
+    return `
+    <div class="review-row">
+      <div class="review-row-header">
+        <div class="reviewer-avatar" style="background:${avatarC}">${name.slice(0,2).toUpperCase()}</div>
+        <div>
+          <div class="reviewer-name">${escHtml(name)}</div>
+          <div class="reviewer-time">${escHtml(r.createTime ? new Date(r.createTime).toLocaleDateString('en-IN') : '')}</div>
+        </div>
+        <div class="review-stars">${stars}</div>
+      </div>
+      <div class="review-text">"${escHtml(r.comment || '(No text)')}"</div>
+      ${hasReply ? `
+        <div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);border-radius:8px;padding:10px 12px;margin-top:8px">
+          <div style="font-size:10px;font-weight:700;color:#4ade80;margin-bottom:4px">OWNER REPLY</div>
+          <div style="font-size:13px;color:var(--text2)">${escHtml(r.reviewReply.comment)}</div>
+        </div>` : '<div style="font-size:11px;color:var(--text3);margin-top:4px">No reply yet</div>'}
+    </div>`;
+  }).join('');
+}
+
+const starRatingMap = { ONE:1, TWO:2, THREE:3, FOUR:4, FIVE:5 };
+
+// ── Reply actions ─────────────────────────────────────────────────────
+async function approveReply(replyId) {
+  const editedText = document.getElementById('replyText_' + replyId)?.value;
+  try {
+    await apiFetch('/api/gmb/reply/approve', 'POST', { replyId, editedText });
+    document.getElementById('reply_' + replyId).innerHTML =
+      '<div class="posted-badge">✓ Reply posted to Google Maps</div>';
+    toast('Reply posted successfully!', 'success');
+  } catch(e) {
+    toast('Failed to post reply: ' + e.message, 'error');
+  }
+}
+
+async function regenReply(replyId) {
+  const btn = event.target;
+  btn.textContent = '⏳ Regenerating…'; btn.disabled = true;
+  try {
+    const data = await apiFetch('/api/gmb/reply/regenerate', 'POST', { replyId });
+    const ta   = document.getElementById('replyText_' + replyId);
+    if (ta) ta.value = data.suggestedReply;
+    toast('New reply generated!', 'success');
+  } catch(e) {
+    toast('Regeneration failed: ' + e.message, 'error');
+  } finally { btn.textContent = '↻ Regenerate'; btn.disabled = false; }
+}
+
+async function rejectReply(replyId) {
+  await apiFetch('/api/gmb/reply/reject', 'POST', { replyId });
+  const el = document.getElementById('reply_' + replyId);
+  if (el) el.style.opacity = '0.3';
+  toast('Reply dismissed', '');
+}
+
+function switchReviewTab(tab, btn) {
+  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pendingRepliesZone').style.display = tab === 'pending' ? 'block' : 'none';
+  document.getElementById('allReviewsZone').style.display     = tab === 'all'     ? 'block' : 'none';
+}
+
+
+</script>
+
+<!-- EXTENSIONS: Only once, after all logic is defined -->
+<script>
+// Extend init to check GMB status
+{
+  const _origInit = window.init;
+  async function init() {
+    await _origInit.call(this);
+    checkOAuthResult();
+    // Check if org has GMB connected
+    try {
+      const res = await apiFetch('/api/auth/me');
+      db_gmbConnected = res.org?.gmbConnected || false;
+    } catch(_) {}
+  }
+  window.init = init;
+}
+
+// Extend showPanel to init business panel
+{
+  const _origShowPanel = window.showPanel;
+  function showPanel(name, navEl) {
+    _origShowPanel(name, navEl);
+    if (name === 'business') {
+      if (db_gmbConnected) { showGmbConnected(); loadAccounts(); }
+      else showGmbNotConnected();
+    }
+  }
+  window.showPanel = showPanel;
+}
+
+// Call the new init
+window.init();
+</script>
+</body>
+</html>

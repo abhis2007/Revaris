@@ -1,0 +1,16 @@
+{
+  "name": "restaurant-saas",
+  "version": "1.0.0",
+  "description": "Restaurant Insights SaaS — weekly AI digest for restaurant businesses",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.3.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.9"
+  }
+}
