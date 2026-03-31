@@ -1,4 +1,4 @@
-# RestaurantIQ SaaS Platform
+# Revaris SaaS Platform
 
 AI-powered weekly digest platform for restaurants. Organisations register, connect their Google Maps listing, and receive a weekly email with rating analysis, unaddressed issues, action items, and competitor alerts.
 
