@@ -6,7 +6,7 @@ const https = require('https');
 let nodemailer;
 try { nodemailer = require('nodemailer'); } catch(_) { nodemailer = null; }
 
-const EMAIL_FROM = process.env.EMAIL_FROM || 'digest@restaurantiq.in';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'hello@Revaris.co.in';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com';
 const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587');
@@ -76,7 +76,7 @@ function buildEmailHTML(org, digestData) {
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#1a1a24,#13131c);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;margin-bottom:16px;text-align:center">
       <div style="font-size:28px;margin-bottom:8px">🍽</div>
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.15em;color:#65647a;text-transform:uppercase;margin-bottom:8px">RestaurantIQ Weekly Digest</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.15em;color:#65647a;text-transform:uppercase;margin-bottom:8px">Revaris Weekly Digest</div>
       <h1 style="margin:0;font-size:22px;font-weight:700;color:#f0eff4">${escHtml(businessName)}</h1>
       <div style="margin-top:6px;font-size:13px;color:#65647a">Week ${weekNumber} · ${new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })}</div>
     </div>
@@ -145,8 +145,8 @@ function buildEmailHTML(org, digestData) {
 
     <!-- Footer -->
     <div style="text-align:center;padding:20px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:8px">
-      <p style="color:#45445a;font-size:12px;margin:0">You are receiving this because ${escHtml(org.name)} subscribed to RestaurantIQ.</p>
-      <p style="color:#45445a;font-size:11px;margin:6px 0 0">© ${new Date().getFullYear()} RestaurantIQ · Weekly digest sent every Monday</p>
+      <p style="color:#45445a;font-size:12px;margin:0">You are receiving this because ${escHtml(org.name)} subscribed to Revaris.</p>
+      <p style="color:#45445a;font-size:11px;margin:6px 0 0">© ${new Date().getFullYear()} Revaris · Weekly digest sent every Monday</p>
     </div>
 
   </div>
@@ -176,7 +176,7 @@ async function sendDigestEmail(org, digestData) {
     const html = buildEmailHTML(org, digestData);
 
     await transporter.sendMail({
-      from: `"RestaurantIQ" <${EMAIL_FROM}>`,
+      from: `"Revaris" <${EMAIL_FROM}>`,
       to: org.email,
       subject: `📊 Weekly Digest: ${digestData.businessName} — Week ${digestData.weekNumber}`,
       html

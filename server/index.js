@@ -74,7 +74,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n🍽  RestaurantIQ SaaS Platform`);
+  console.log(`\n🍽  Revaris SaaS Platform`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`✅  Server         → http://localhost:${PORT}`);
   console.log(`🔑  Anthropic key  → ${process.env.ANTHROPIC_API_KEY ? '✓ Set' : '✗ NOT SET — set ANTHROPIC_API_KEY'}`);
