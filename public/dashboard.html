@@ -866,14 +866,211 @@ function switchReviewTab(tab, btn) {
         <tr style="background:var(--surface)"><th style="padding:10px 8px;text-align:left">Rank</th><th style="padding:10px 8px;text-align:left">Name</th><th style="padding:10px 8px;text-align:left">Rating</th><th style="padding:10px 8px;text-align:left">Reviews</th></tr>
         ${report.map((r,i)=>`<tr><td style="padding:8px">${i+1}</td><td style="padding:8px">${escHtml(r.name)}</td><td style="padding:8px">${r.rating||'—'}★</td><td style="padding:8px">${r.totalReviews}</td></tr>`).join('')}
       </table>`;
-      // AI Insights
-      if (aiInsights && (aiInsights.summary || (aiInsights.suggestions && aiInsights.suggestions.length))) {
-        html += `<div style="margin-top:28px;background:var(--surface);border-radius:10px;padding:18px 20px">
-          <div style="font-size:15px;font-weight:700;color:var(--accent2);margin-bottom:8px">🤖 AI Competitive Insights</div>
-          ${aiInsights.summary ? `<div style=\"font-size:14px;color:var(--text2);margin-bottom:10px\">${escHtml(aiInsights.summary)}</div>` : ''}
-          ${(aiInsights.suggestions||[]).length ? `<ul style=\"margin:0 0 0 18px;padding:0;color:var(--text2);font-size:14px\">${aiInsights.suggestions.map(s=>`<li>${escHtml(s)}</li>`).join('')}</ul>` : ''}
-        </div>`;
-      }
+
+// AI Insights (Premium UI)
+if (aiInsights) {
+  html += `
+  <div style="
+    margin-top:32px;
+    background:var(--surface);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.25);
+    font-family: Inter, system-ui, sans-serif;
+  ">
+
+    <!-- Header -->
+    <div style="
+      font-size:20px;
+      font-weight:700;
+      color:var(--text1);
+      margin-bottom:18px;
+    ">
+      Competitive Intelligence
+    </div>
+
+    ${aiInsights.summary ? `
+      <div style="
+        font-size:15px;
+        color:var(--text2);
+        line-height:1.6;
+        margin-bottom:20px;
+      ">
+        ${escHtml(aiInsights.summary)}
+      </div>
+    ` : ''}
+
+    <!-- Top Competitor -->
+    ${aiInsights.top_competitor ? `
+      <div style="
+        margin-bottom:20px;
+        padding:16px;
+        border-radius:10px;
+        background:linear-gradient(135deg, rgba(255,193,7,0.12), rgba(255,152,0,0.08));
+        border:1px solid rgba(255,193,7,0.25);
+      ">
+        <div style="font-size:13px;font-weight:600;color:#ffb300;margin-bottom:6px;">
+          Market Leader
+        </div>
+        <div style="font-size:15px;color:var(--text1);font-weight:600;">
+          ${escHtml(aiInsights.top_competitor.name)}
+        </div>
+        <div style="font-size:14px;color:var(--text2);margin-top:4px;line-height:1.5;">
+          ${escHtml(aiInsights.top_competitor.why_winning)}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Competitor Section Wrapper -->
+    ${(aiInsights.competitor_analysis || []).length ? `
+      <div style="
+        margin-bottom:24px;
+        padding:18px;
+        border-radius:12px;
+        background:rgba(244,67,54,0.05);
+        border:1px solid rgba(244,67,54,0.2);
+      ">
+        <div style="
+          font-size:16px;
+          font-weight:600;
+          color:#ff6b6b;
+          margin-bottom:12px;
+        ">
+          Key Competitors
+        </div>
+
+        ${aiInsights.competitor_analysis.map(c => `
+          <div style="
+            margin-bottom:12px;
+            padding:14px;
+            border-radius:10px;
+            background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.05);
+          ">
+            <div style="font-size:15px;font-weight:600;color:var(--text1);">
+              ${escHtml(c.name)}
+            </div>
+
+            <div style="
+              font-size:13px;
+              color:var(--text2);
+              margin-top:6px;
+            ">
+              Positive ${c.sentiment.positive} · Neutral ${c.sentiment.neutral} · Negative ${c.sentiment.negative}
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              Growth ${(c.growth_rate * 100).toFixed(1)}%
+            </div>
+
+            <div style="
+              font-size:13px;
+              margin-top:8px;
+              color:#66bb6a;
+            ">
+              ${c.strengths.join(' • ')}
+            </div>
+
+            <div style="
+              font-size:13px;
+              margin-top:4px;
+              color:#ef5350;
+            ">
+              ${c.weaknesses.join(' • ')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <!-- Gaps Section (FIXED VISIBILITY) -->
+    ${aiInsights.gap_analysis ? `
+      <div style="
+        margin-bottom:22px;
+        padding:18px;
+        border-radius:12px;
+        background:rgba(255,152,0,0.08);
+        border:1px solid rgba(255,152,0,0.25);
+      ">
+        <div style="
+          font-size:16px;
+          font-weight:600;
+          color:#ffa726;
+          margin-bottom:10px;
+        ">
+          Growth Gaps
+        </div>
+
+        <div style="
+          font-size:14px;
+          color:var(--text1);
+          line-height:1.6;
+          margin-bottom:10px;
+        ">
+          ${escHtml(aiInsights.gap_analysis.user_vs_market)}
+        </div>
+
+        <ul style="
+          margin:0;
+          padding-left:18px;
+          font-size:13px;
+          color:var(--text2);
+          line-height:1.6;
+        ">
+          ${(aiInsights.gap_analysis.missed_opportunities || []).map(m => `
+            <li>${escHtml(m)}</li>
+          `).join('')}
+        </ul>
+      </div>
+    ` : ''}
+
+    <!-- Action Plan -->
+    ${aiInsights.action_plan ? `
+      <div style="
+        padding:18px;
+        border-radius:12px;
+        background:rgba(76,175,80,0.06);
+        border:1px solid rgba(76,175,80,0.25);
+      ">
+        <div style="
+          font-size:16px;
+          font-weight:600;
+          color:#66bb6a;
+          margin-bottom:12px;
+        ">
+          Action Plan
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:#ef5350;margin-bottom:4px;">
+            Immediate Priorities
+          </div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
+            ${(aiInsights.action_plan.do_immediately || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:#42a5f5;margin-bottom:4px;">
+            Next Phase Improvements
+          </div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
+            ${(aiInsights.action_plan.next_steps || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#26a69a;margin-bottom:4px;">
+            Competitive Advantage Opportunities
+          </div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
+            ${(aiInsights.action_plan.exploit_competitor_weakness || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+          </ul>
+        </div>
+
+      </div>
+    ` : ''}
+
+  </div>`;
+}
       zone.innerHTML = html;
       // Chart
       const ctx = document.getElementById('competitiveChart').getContext('2d');

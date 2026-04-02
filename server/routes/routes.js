@@ -22,34 +22,228 @@ function redirect(res, location) {
 
 async function getCompetitiveAiInsights(report, orgInfo) {
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || 'YOUR_ANTHROPIC_KEY';
-  if (!ANTHROPIC_KEY) {
+  const isMockEnv = process.env.MOCK_MODE === 'true' || !ANTHROPIC_KEY;
+  if (isMockEnv) {
+    // Stub/mock response for development or when AI is unavailable (matches new format)
     return {
-      summary: 'AI analysis unavailable (missing Anthropic API key)',
-      suggestions: []
-    };
+      "summary": "The market shows a mix of premium dining experiences winning on food quality and service (Ancient Barbeque, Moti Mahal) while large chains (McDonald’s) are losing customer trust due to inconsistent service and quality issues. Your business has stronger growth momentum than most competitors but lacks clear differentiation in experience and consistency-driven branding.",
+      "competitor_analysis": [
+        {
+          "name": "The Ancient Barbeque & Bar in Noida",
+          "sentiment": {
+            "positive": 5,
+            "neutral": 0,
+            "negative": 0
+          },
+          "growth_rate": 0.0006,
+          "strengths": [
+            "Consistently high food quality and taste",
+            "Strong service experience with staff recognition",
+            "Great ambience suitable for celebrations",
+            "Wide variety of food options"
+          ],
+          "weaknesses": [
+            "Hygiene issues in washrooms",
+            "No dedicated parking",
+            "Hidden service charges complaints"
+          ]
+        },
+        {
+          "name": "Moti Mahal Fine Dining & Bar",
+          "sentiment": {
+            "positive": 4,
+            "neutral": 1,
+            "negative": 0
+          },
+          "growth_rate": 0.0033,
+          "strengths": [
+            "Authentic North Indian taste",
+            "Premium dining ambience",
+            "Highly attentive staff",
+            "Strong brand recall for quality meals"
+          ],
+          "weaknesses": [
+            "Inconsistent delivery experience",
+            "Food quality drops in online orders",
+            "Overuse of spices causing dissatisfaction"
+          ]
+        },
+        {
+          "name": "McDonald’s",
+          "sentiment": {
+            "positive": 2,
+            "neutral": 1,
+            "negative": 2
+          },
+          "growth_rate": 0.0008,
+          "strengths": [
+            "Strong brand trust and familiarity",
+            "Clean outlets and predictable experience (in some cases)",
+            "Good for quick and affordable meals"
+          ],
+          "weaknesses": [
+            "Slow service despite low crowd",
+            "Inconsistent food quality",
+            "Poor staff behavior and understaffing",
+            "Order handling inefficiencies"
+          ]
+        }
+      ],
+      "top_competitor": {
+        "name": "The Ancient Barbeque & Bar in Noida",
+        "why_winning": "They deliver a complete experience—high-quality food, strong service, and ambience tailored for group occasions. Customers repeatedly highlight staff behavior and food consistency, which builds loyalty and repeat visits."
+      },
+      "gap_analysis": {
+        "user_vs_market": "Tasty Treats has significantly higher growth momentum (1.87%) compared to competitors but lacks strong positioning in customer experience, staff recognition, and memorable dining value.",
+        "missed_opportunities": [
+          "No strong positioning around occasions (birthdays, family dining)",
+          "Lack of highlighted staff experience or personalized service",
+          "No visible differentiation in ambience or experience",
+          "Not leveraging competitor hygiene/service failures in branding",
+          "Limited focus on review generation despite strong growth potential"
+        ]
+      },
+      "action_plan": {
+        "do_immediately": [
+          "Introduce a 'celebration package' (free cake, decor, staff shoutout) to directly compete with Ancient Barbeque’s occasion-driven demand",
+          "Launch a strict service SLA (order time guarantee + compensation) to capitalize on competitors’ slow service complaints"
+        ],
+        "next_steps": [
+          "Train staff to create memorable interactions and encourage name mentions in reviews",
+          "Run a review acquisition campaign (QR on table + incentive) to accelerate visibility",
+          "Improve ambience elements (lighting, music, seating) for social sharing appeal",
+          "Create a consistent food quality checklist to avoid McDonald’s-like inconsistency issues",
+          "Build a strong delivery experience with packaging and quality control to beat Moti Mahal’s weakness"
+        ],
+        "exploit_competitor_weakness": [
+          "Market hygiene and cleanliness aggressively to target Ancient Barbeque and Mithaas gaps",
+          "Promote 'fast service guarantee' to attract frustrated McDonald’s and Pizza Hut customers",
+          "Highlight 'consistent quality every time' messaging to win against brands with fluctuating experiences",
+          "Offer transparent pricing (no hidden charges) to build trust over competitors adding extra fees",
+          "Focus on reliable delivery experience to capture dissatisfied online food ordering customers"
+        ]
+      }
+    }
   }
   // Prepare prompt for Claude
-  const prompt = `You are a business analyst AI. Given the following competitive report for a restaurant, analyze:
-1. The sentiment of recent reviews for each competitor (focus on the last month if possible).
-2. Normalize footfall by considering review count growth in the last month vs. all-time, and business age (if available).
-3. Suggest what the user's business should focus on to grow more, based on competitor strengths/weaknesses.
+  const prompt = `
+      You are an expert restaurant business analyst AI.
 
-Report (JSON):
-${JSON.stringify(report)}
+    Your task is to analyze competitor data and generate highly actionable insights that help a restaurant owner outperform competitors and grow revenue.
 
-User business info:
-${JSON.stringify(orgInfo)}
+    INPUT DATA:
 
-Return your answer as a JSON object with this format:
-{
-  "summary": "Concise summary here.",
-  "suggestions": [
-    "Actionable suggestion 1",
-    "Actionable suggestion 2",
-    "Actionable suggestion 3"
-  ]
-}
-Respond ONLY with valid JSON. Do not include any other text.`;
+    Competitor Report (JSON):
+    ${JSON.stringify(report, null, 2)}
+
+    User Business Info (JSON):
+    ${JSON.stringify(orgInfo, null, 2)}
+
+    ---
+
+    ANALYSIS REQUIREMENTS:
+
+    1. SENTIMENT ANALYSIS
+    - Classify recent reviews (last 30 days) into:
+      positive / neutral / negative
+    - Count each category for every competitor
+    - Identify sentiment trend (improving / declining / stable)
+
+    2. REVIEW VELOCITY & GROWTH
+    - Calculate:
+      growth_rate = reviews_last_month / total_reviews
+    - Compare growth adjusted by business age
+    - Identify which competitors are gaining momentum fastest
+
+    3. CUSTOMER EXPERIENCE INSIGHTS
+    From reviews, extract:
+    - Top strengths (e.g., fast service, taste, ambience)
+    - Top complaints (e.g., slow delivery, pricing, hygiene)
+    - Most mentioned themes
+
+    4. COMPETITOR WEAKNESS DETECTION (VERY IMPORTANT)
+    - Identify repeated negative patterns
+    - Explain WHY customers are unhappy
+    - Highlight opportunities where the user can outperform competitors
+
+    5. WINNING FACTORS
+    - Identify what top competitors are doing right
+    - Explain what makes them successful
+
+    6. GAP ANALYSIS (USER vs COMPETITORS)
+    - Compare user's business with top competitors:
+      - sentiment
+      - growth
+      - engagement
+    - Clearly highlight gaps:
+      - where user is behind
+      - where user has advantage
+
+    7. ACTIONABLE STRATEGY (MOST IMPORTANT)
+    Provide specific, practical strategies:
+    - Minimum 5 actions
+    - Must be directly implementable
+    - Must include:
+      - quick wins (immediate impact)
+      - mid-term improvements
+      - differentiation strategy
+
+    8. COMPETITOR PRIORITIZATION (VERY IMPORTANT)
+
+    - Do NOT include all competitors in the final output.
+    - Select ONLY the top 2-3 most relevant competitors based on:
+      1. Highest review growth rate
+      2. Strongest positive sentiment
+      3. Direct competitive threat
+
+    - Prioritize competitors that:
+      - Are outperforming the user
+      - OR are rapidly growing
+
+    - Ignore low-impact competitors unless they reveal a unique weakness or opportunity.
+
+    ---
+
+    OUTPUT FORMAT (STRICT JSON ONLY):
+
+    {
+      "summary": "High-level insight",
+      "competitor_analysis": [
+        {
+          "name": "Competitor Name",
+          "sentiment": {
+            "positive": number,
+            "neutral": number,
+            "negative": number
+          },
+          "growth_rate": number,
+          "strengths": ["..."],
+          "weaknesses": ["..."]
+        }
+      ],
+      "top_competitor": {
+        "name": "Name",
+        "why_winning": "Explanation"
+      },
+      "gap_analysis": {
+        "user_vs_market": "Where user stands",
+        "missed_opportunities": ["..."]
+      },
+      "action_plan": {
+        "do_immediately": ["..."],
+        "next_steps": ["..."],
+        "exploit_competitor_weakness": ["..."]
+      }
+    }
+
+    IMPORTANT:
+    - Be specific, not generic
+    - Avoid vague advice
+    - Focus on revenue growth
+    - Think like a business consultant
+
+    Respond ONLY with valid JSON.
+  `;
 
   const bodyStr = JSON.stringify({
     model: 'claude-sonnet-4-20250514',
@@ -584,6 +778,7 @@ async function handleRouteWithCompetitive(req, res, body) {
       }
       // Call AI insights endpoint (internal call)
       let aiInsights = null;
+      // console.log('Generating AI insights for competitive report...' + JSON.stringify(report));
       try {
         aiInsights = await getCompetitiveAiInsights(report, org);
       } catch (e) {
