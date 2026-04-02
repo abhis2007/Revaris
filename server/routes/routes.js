@@ -457,5 +457,52 @@ function numToStarRating(n) {
   return map[n] || 'THREE';
 }
 
+
+// Competitive Report module
+const competitiveReport = require('../gmb/competitiveReport');
+
+// Add competitive report endpoint
 // Override export
 module.exports = { handleRoute: handleRouteWithGmb };
+
+// Patch handleRouteWithGmb to include competitive report route
+const _originalHandleRouteWithGmb = handleRouteWithGmb;
+async function handleRouteWithCompetitive(req, res, body) {
+  const result = await _originalHandleRouteWithGmb(req, res, body);
+  if (result !== null) return result;
+
+  const url    = req.url.split('?')[0];
+  const method = req.method;
+  let parsed   = {};
+  try { if (body) parsed = JSON.parse(body); } catch(_) {}
+
+  // ── Competitive Report: generate (with caching) ───────────────
+  if (method === 'POST' && url === '/api/competitive/report') {
+    const org = requireAuth(req);
+    if (!org) return json(res, 401, { error: 'Not authenticated' });
+    // Expect org to have businessName and location (lat, lng)
+    const { businessName, lat, lng, type, forceRefresh } = parsed;
+    if (!businessName || !lat || !lng) {
+      return json(res, 400, { error: 'businessName, lat, lng required' });
+    }
+    try {
+      // Try to serve cached report unless refresh is requested
+      if (!forceRefresh) {
+        const cached = db.getCompetitiveReport(org.id);
+        if (cached && cached.report) {
+          return json(res, 200, { report: cached.report, cached: true, updatedAt: cached.updatedAt });
+        }
+      }
+      // Generate new report, cache it, and return
+      const report = await competitiveReport.generateCompetitiveReport(businessName, type || 'restaurant', lat, lng);
+      db.saveCompetitiveReport(org.id, report);
+      return json(res, 200, { report, cached: false });
+    } catch (err) {
+      return json(res, 500, { error: err.message });
+    }
+  }
+
+  return null;
+}
+
+module.exports = { handleRoute: handleRouteWithCompetitive };

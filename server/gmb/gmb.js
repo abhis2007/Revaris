@@ -255,5 +255,6 @@ module.exports = {
   fetchLocations,
   fetchGmbReviews,
   replyToReview,
-  deleteReply
+  deleteReply,
+  // For future: competitive report API
 };

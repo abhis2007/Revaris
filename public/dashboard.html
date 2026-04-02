@@ -126,6 +126,7 @@
   <button class="nav-item active" onclick="showPanel('overview', this)">📊 Overview</button>
   <button class="nav-item" onclick="showPanel('digests', this)">📧 Digests</button>
   <button class="nav-item" onclick="showPanel('business', this)">🏪 Business</button>
+  <button class="nav-item" onclick="showPanel('competitive', this)">🏆 Competitive Analysis</button>
   <button class="nav-item" onclick="showPanel('settings', this)">⚙ Settings</button>
   <div class="sidebar-footer">
     <button class="nav-item" onclick="logout()">← Logout</button>
@@ -301,6 +302,19 @@
       </div>
     </div>
   </div>
+
+    <!-- Competitive Analysis panel -->
+    <div class="panel" id="panel-competitive">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Competitive Analysis</div>
+          <div class="page-sub">See how your restaurant compares to nearby competitors</div>
+        </div>
+        <button class="btn btn-primary" onclick="loadCompetitiveReport(true)">↻ Refresh Report</button>
+      </div>
+      <div id="competitiveReportZone"></div>
+      <canvas id="competitiveChart" style="margin-top:32px;max-width:700px;display:none"></canvas>
+    </div>
 
 </main>
 
@@ -822,7 +836,61 @@ function switchReviewTab(tab, btn) {
   document.getElementById('allReviewsZone').style.display     = tab === 'all'     ? 'block' : 'none';
 }
 
-
+// ── Competitive Analysis ─────────────────────────────────────────────
+  async function loadCompetitiveReport(forcedRefresh = false) {
+    const zone = document.getElementById('competitiveReportZone');
+    zone.innerHTML = '<div class="loader"></div>';
+    document.getElementById('competitiveChart').style.display = 'none';
+    try {
+      let lat = orgData?.lat, lng = orgData?.lng;
+      if (!lat || !lng) {
+        const loc = encodeURIComponent(orgData.location || 'Noida');
+        const geo = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${loc}`).then(r=>r.json());
+        if (geo[0]) { lat = geo[0].lat; lng = geo[0].lon; }
+      }
+      if (!lat || !lng) throw new Error('Could not determine your location. Please update your profile.');
+      const res = await apiFetch('/api/competitive/report', 'POST', {
+        businessName: orgData.businessName,
+        lat: Number(lat),
+        lng: Number(lng),
+        type: 'restaurant',
+        forceRefresh: forcedRefresh
+      });
+      const report = res.report || [];
+      if (!report.length) {
+        zone.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>No competitors found nearby.</p></div>';
+        return;
+      }
+      zone.innerHTML = `<table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
+        <tr style="background:var(--surface)"><th style="padding:10px 8px;text-align:left">Rank</th><th style="padding:10px 8px;text-align:left">Name</th><th style="padding:10px 8px;text-align:left">Rating</th><th style="padding:10px 8px;text-align:left">Reviews</th></tr>
+        ${report.map((r,i)=>`<tr><td style="padding:8px">${i+1}</td><td style="padding:8px">${escHtml(r.name)}</td><td style="padding:8px">${r.rating||'—'}★</td><td style="padding:8px">${r.totalReviews}</td></tr>`).join('')}
+      </table>`;
+      // Chart
+      const ctx = document.getElementById('competitiveChart').getContext('2d');
+      document.getElementById('competitiveChart').style.display = 'block';
+      if (window.compChart) window.compChart.destroy();
+      window.compChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: report.map(r=>r.name),
+          datasets: [
+            { label: 'Reviews (Footfall)', data: report.map(r=>r.totalReviews), backgroundColor: '#f5a62388' },
+            { label: 'Rating', data: report.map(r=>r.rating), backgroundColor: '#4ade8088', yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Reviews' } },
+            y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'Rating' }, min: 0, max: 5 }
+          }
+        }
+      });
+    } catch(e) {
+      zone.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
+    }
+  }
+  
 </script>
 
 <!-- EXTENSIONS: Only once, after all logic is defined -->
@@ -842,7 +910,7 @@ function switchReviewTab(tab, btn) {
   window.init = init;
 }
 
-// Extend showPanel to init business panel
+// Extend showPanel to init business and competitive panels
 {
   const _origShowPanel = window.showPanel;
   function showPanel(name, navEl) {
@@ -851,6 +919,9 @@ function switchReviewTab(tab, btn) {
       if (db_gmbConnected) { showGmbConnected(); loadAccounts(); }
       else showGmbNotConnected();
     }
+    if (name === 'competitive') {
+      loadCompetitiveReport(false);
+    }
   }
   window.showPanel = showPanel;
 }
@@ -858,5 +929,8 @@ function switchReviewTab(tab, btn) {
 // Call the new init
 window.init();
 </script>
+</script>
+<!-- Chart.js CDN for competitive chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

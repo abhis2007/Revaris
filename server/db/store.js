@@ -2,10 +2,12 @@
 const fs   = require('fs');
 const path = require('path');
 
+
 const DB_DIR   = path.join(__dirname, 'data');
 const ORGS_F   = path.join(DB_DIR, 'orgs.json');
 const DIGESTS_F= path.join(DB_DIR, 'digests.json');
 const SESSIONS_F=path.join(DB_DIR, 'sessions.json');
+const COMPETITIVE_REPORTS_F = path.join(DB_DIR, 'competitiveReports.json');
 
 if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
 [ORGS_F, DIGESTS_F, SESSIONS_F].forEach(f => { if (!fs.existsSync(f)) fs.writeFileSync(f, '[]'); });
@@ -151,4 +153,31 @@ db.updateReplyStatus = function(replyId, status, editedReply) {
     return all[idx];
   }
   return null;
+};
+
+if (!fs.existsSync(COMPETITIVE_REPORTS_F)) fs.writeFileSync(COMPETITIVE_REPORTS_F, '[]');
+// ── Competitive Report Caching ─────────────────────────────────────
+// Save a competitive report for an org (replace if exists for orgId)
+db.saveCompetitiveReport = function(orgId, report) {
+  const all = read(COMPETITIVE_REPORTS_F);
+  const idx = all.findIndex(r => r.orgId === orgId);
+  const entry = {
+    orgId,
+    report,
+    updatedAt: new Date().toISOString()
+  };
+  if (idx >= 0) all[idx] = entry;
+  else all.push(entry);
+  write(COMPETITIVE_REPORTS_F, all);
+  return entry;
+};
+
+// Get the latest competitive report for an org
+db.getCompetitiveReport = function(orgId) {
+  return read(COMPETITIVE_REPORTS_F).find(r => r.orgId === orgId) || null;
+};
+
+// Delete a competitive report for an org
+db.deleteCompetitiveReport = function(orgId) {
+  write(COMPETITIVE_REPORTS_F, read(COMPETITIVE_REPORTS_F).filter(r => r.orgId !== orgId));
 };
