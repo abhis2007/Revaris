@@ -857,14 +857,24 @@ function switchReviewTab(tab, btn) {
         forceRefresh: forcedRefresh
       });
       const report = res.report || [];
+      const aiInsights = res.aiInsights || {};
       if (!report.length) {
         zone.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>No competitors found nearby.</p></div>';
         return;
       }
-      zone.innerHTML = `<table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
+      let html = `<table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
         <tr style="background:var(--surface)"><th style="padding:10px 8px;text-align:left">Rank</th><th style="padding:10px 8px;text-align:left">Name</th><th style="padding:10px 8px;text-align:left">Rating</th><th style="padding:10px 8px;text-align:left">Reviews</th></tr>
         ${report.map((r,i)=>`<tr><td style="padding:8px">${i+1}</td><td style="padding:8px">${escHtml(r.name)}</td><td style="padding:8px">${r.rating||'—'}★</td><td style="padding:8px">${r.totalReviews}</td></tr>`).join('')}
       </table>`;
+      // AI Insights
+      if (aiInsights && (aiInsights.summary || (aiInsights.suggestions && aiInsights.suggestions.length))) {
+        html += `<div style="margin-top:28px;background:var(--surface);border-radius:10px;padding:18px 20px">
+          <div style="font-size:15px;font-weight:700;color:var(--accent2);margin-bottom:8px">🤖 AI Competitive Insights</div>
+          ${aiInsights.summary ? `<div style=\"font-size:14px;color:var(--text2);margin-bottom:10px\">${escHtml(aiInsights.summary)}</div>` : ''}
+          ${(aiInsights.suggestions||[]).length ? `<ul style=\"margin:0 0 0 18px;padding:0;color:var(--text2);font-size:14px\">${aiInsights.suggestions.map(s=>`<li>${escHtml(s)}</li>`).join('')}</ul>` : ''}
+        </div>`;
+      }
+      zone.innerHTML = html;
       // Chart
       const ctx = document.getElementById('competitiveChart').getContext('2d');
       document.getElementById('competitiveChart').style.display = 'block';

@@ -1,6 +1,9 @@
 // ── routes.js ── All HTTP route handlers ─────────────────────────────
+require('../dotenv-load');
+
 const bcrypt = require('bcryptjs');
 const db     = require('../db/store');
+const https = require('https');
 const { requireAuth, sessionCookieHeader, clearCookieHeader } = require('../auth/auth');
 const { generateDigestForOrg, searchPlace } = require('../digest/insights');
 const { sendDigestEmail } = require('../digest/mailer');
@@ -16,6 +19,85 @@ function redirect(res, location) {
   res.writeHead(302, { Location: location });
   res.end();
 }
+
+async function getCompetitiveAiInsights(report, orgInfo) {
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || 'YOUR_ANTHROPIC_KEY';
+  if (!ANTHROPIC_KEY) {
+    return {
+      summary: 'AI analysis unavailable (missing Anthropic API key)',
+      suggestions: []
+    };
+  }
+  // Prepare prompt for Claude
+  const prompt = `You are a business analyst AI. Given the following competitive report for a restaurant, analyze:
+1. The sentiment of recent reviews for each competitor (focus on the last month if possible).
+2. Normalize footfall by considering review count growth in the last month vs. all-time, and business age (if available).
+3. Suggest what the user's business should focus on to grow more, based on competitor strengths/weaknesses.
+
+Report (JSON):
+${JSON.stringify(report)}
+
+User business info:
+${JSON.stringify(orgInfo)}
+
+Return your answer as a JSON object with this format:
+{
+  "summary": "Concise summary here.",
+  "suggestions": [
+    "Actionable suggestion 1",
+    "Actionable suggestion 2",
+    "Actionable suggestion 3"
+  ]
+}
+Respond ONLY with valid JSON. Do not include any other text.`;
+
+  const bodyStr = JSON.stringify({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 400,
+    messages: [{ role: 'user', content: prompt }]
+  });
+  
+  const result = await httpsPost(
+    'api.anthropic.com', '/v1/messages',
+    {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyStr),
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    bodyStr
+  );
+
+  const data = JSON.parse(result.body);
+  if(JSON.parse(result.body).error.type === 'invalid_request_error') {
+    throw new Error(`Anthropic API error: ${data.error.message}`);
+  }
+  if(JSON.parse(result.body).error.type === 'authentication_error') {
+    throw new Error(`Anthropic API error: invalid API key`);
+  }
+  
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error('Claude did not return valid JSON: ' + text);
+  }
+}
+
+
+function httpsPost(hostname, urlPath, headers, body) {
+  return new Promise((resolve, reject) => {
+    const req = https.request({ hostname, path: urlPath, method: 'POST', headers }, res => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => resolve({ status: res.statusCode, body: data }));
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
 
 // ── Route dispatcher ───────────────────────────────────────────────────
 async function handleRoute(req, res, body) {
@@ -476,7 +558,7 @@ async function handleRouteWithCompetitive(req, res, body) {
   let parsed   = {};
   try { if (body) parsed = JSON.parse(body); } catch(_) {}
 
-  // ── Competitive Report: generate (with caching) ───────────────
+  // ── Competitive Report: generate (with caching + AI insights) ───────────────
   if (method === 'POST' && url === '/api/competitive/report') {
     const org = requireAuth(req);
     if (!org) return json(res, 401, { error: 'Not authenticated' });
@@ -486,17 +568,29 @@ async function handleRouteWithCompetitive(req, res, body) {
       return json(res, 400, { error: 'businessName, lat, lng required' });
     }
     try {
-      // Try to serve cached report unless refresh is requested
+      let report, cached = false, updatedAt = null;
       if (!forceRefresh) {
-        const cached = db.getCompetitiveReport(org.id);
-        if (cached && cached.report) {
-          return json(res, 200, { report: cached.report, cached: true, updatedAt: cached.updatedAt });
+        const cachedObj = db.getCompetitiveReport(org.id);
+        if (cachedObj && cachedObj.report) {
+          report = cachedObj.report;
+          cached = true;
+          updatedAt = cachedObj.updatedAt;
         }
       }
-      // Generate new report, cache it, and return
-      const report = await competitiveReport.generateCompetitiveReport(businessName, type || 'restaurant', lat, lng);
-      db.saveCompetitiveReport(org.id, report);
-      return json(res, 200, { report, cached: false });
+      if (!report) {
+        report = await competitiveReport.generateCompetitiveReport(businessName, type || 'restaurant', lat, lng);
+        db.saveCompetitiveReport(org.id, report);
+        cached = false;
+      }
+      // Call AI insights endpoint (internal call)
+      let aiInsights = null;
+      try {
+        aiInsights = await getCompetitiveAiInsights(report, org);
+      } catch (e) {
+        console.error('Error generating AI insights:', e.message);
+        aiInsights = { summary: 'AI analysis unavailable', suggestions: [] };
+      }
+      return json(res, 200, { report, aiInsights, cached, updatedAt });
     } catch (err) {
       return json(res, 500, { error: err.message });
     }
