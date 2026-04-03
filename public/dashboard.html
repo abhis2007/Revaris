@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+      @media (max-width: 900px) {
+        body { grid-template-columns: 1fr !important; }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; width: 240px; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; box-shadow: 2px 0 12px rgba(0,0,0,0.18); }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-backdrop { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.25); z-index: 999; }
+        .main { padding: 18px 8px; }
+        .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+      }
+      @media (max-width: 600px) {
+        .main { padding: 10px 2vw; }
+        .page-title { font-size: 17px; }
+        .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-card { padding: 10px 8px; }
+        .panel { padding-bottom: 60px; }
+      }
+      .hamburger { display: none; position: fixed; top: 18px; left: 18px; z-index: 1100; width: 36px; height: 36px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border2); justify-content: center; align-items: center; cursor: pointer; }
+      .hamburger span { display: block; width: 22px; height: 3px; background: var(--accent2); margin: 4px 0; border-radius: 2px; transition: all 0.2s; }
+      @media (max-width: 900px) {
+        .hamburger { display: flex; }
+      }
+      @media (max-width: 900px) {
+        .sidebar-backdrop { display: none; }
+        .sidebar.open ~ .sidebar-backdrop { display: block; }
+      }
+    </style>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Dashboard — Revaris</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -114,9 +140,16 @@
   </style>
 </head>
 <body>
+<div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()" style="display:none"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar">
+  <!-- Sidebar content unchanged -->
   <div class="logo">🍽 Revaris</div>
   <div class="org-chip">
     <div class="org-name" id="orgName">Loading…</div>
@@ -321,6 +354,23 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// Hamburger menu logic for mobile sidebar
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  sidebar.classList.toggle('open');
+  backdrop.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').style.display = 'none';
+}
+// Close sidebar on navigation (mobile)
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (window.innerWidth <= 900) closeSidebar();
+  });
+});
 let orgData = null;
 let allDigests = [];
 
