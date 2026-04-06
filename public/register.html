@@ -134,7 +134,13 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { API_BASE_URL } from './config.js';
+window.register = register;
+window.nextStep1 = nextStep1;
+window.nextStep2 = nextStep2;
+window.prevStep = prevStep;
+window.selectPlan = selectPlan;
   let selectedPlan = 'starter';
 
   function goStep(n) {
@@ -183,7 +189,7 @@
       digestDay:    document.getElementById('digestDay').value
     };
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(API_BASE_URL + '/api/auth/register', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload), credentials:'include'
       });

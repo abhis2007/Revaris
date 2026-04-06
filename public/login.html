@@ -35,7 +35,9 @@
   <button class="btn" id="btn" onclick="login()">Sign In</button>
   <div class="link-row">Don't have an account? <a href="/register">Sign up free</a></div>
 </div>
-<script>
+<script type="module">
+import { API_BASE_URL } from './config.js';
+window.login = login;
 async function login() {
   const email    = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
@@ -44,7 +46,7 @@ async function login() {
   if (!email || !password) { showErr('Please fill in all fields'); return; }
   btn.disabled = true; btn.textContent = 'Signing in…';
   try {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(API_BASE_URL + '/api/auth/login', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ email, password }), credentials:'include'
     });

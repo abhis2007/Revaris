@@ -1,32 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-      @media (max-width: 900px) {
-        body { grid-template-columns: 1fr !important; }
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; width: 240px; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; box-shadow: 2px 0 12px rgba(0,0,0,0.18); }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-backdrop { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.25); z-index: 999; }
-        .main { padding: 18px 8px; }
-        .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
-      }
-      @media (max-width: 600px) {
-        .main { padding: 10px 2vw; }
-        .page-title { font-size: 17px; }
-        .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
-        .stat-card { padding: 10px 8px; }
-        .panel { padding-bottom: 60px; }
-      }
-      .hamburger { display: none; position: fixed; top: 18px; left: 18px; z-index: 1100; width: 36px; height: 36px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border2); justify-content: center; align-items: center; cursor: pointer; }
-      .hamburger span { display: block; width: 22px; height: 3px; background: var(--accent2); margin: 4px 0; border-radius: 2px; transition: all 0.2s; }
-      @media (max-width: 900px) {
-        .hamburger { display: flex; }
-      }
-      @media (max-width: 900px) {
-        .sidebar-backdrop { display: none; }
-        .sidebar.open ~ .sidebar-backdrop { display: block; }
-      }
-    </style>
+  <style>
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr !important; }
+      .sidebar { position: fixed; left: 0; top: 0; height: 100vh; width: 240px; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; box-shadow: 2px 0 12px rgba(0,0,0,0.18); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-backdrop { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.25); z-index: 999; }
+      .main { padding: 18px 8px; }
+      .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .main { padding: 10px 2vw; }
+      .page-title { font-size: 17px; }
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .stat-card { padding: 10px 8px; }
+      .panel { padding-bottom: 60px; }
+    }
+    .hamburger { display: none; position: fixed; top: 18px; left: 18px; z-index: 1100; width: 36px; height: 36px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border2); justify-content: center; align-items: center; cursor: pointer; }
+    .hamburger span { display: block; width: 22px; height: 3px; background: var(--accent2); margin: 4px 0; border-radius: 2px; transition: all 0.2s; }
+    @media (max-width: 900px) { .hamburger { display: flex; } }
+    @media (max-width: 900px) {
+      .sidebar-backdrop { display: none; }
+      .sidebar.open ~ .sidebar-backdrop { display: block; }
+    }
+  </style>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Dashboard — Revaris</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -34,8 +32,6 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#0a0a0e;--bg2:#111118;--surface:#1a1a26;--accent:#f5a623;--accent2:#e8436a;--text:#f0eff4;--text2:#9897a9;--text3:#45445a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--green:#4ade80;--red:#f87171;--amber:#fbbf24;--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif}
     body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;display:grid;grid-template-columns:240px 1fr;overflow:hidden;height:100vh}
-
-    /* Sidebar */
     .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;overflow-y:auto}
     .logo{font-family:var(--font-d);font-size:18px;font-weight:800;background:linear-gradient(135deg,#f5a623,#e8436a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:32px;padding:0 8px}
     .org-chip{background:var(--surface);border-radius:10px;padding:12px;margin-bottom:24px}
@@ -46,8 +42,6 @@
     .nav-item:hover{background:var(--surface);color:var(--text)}
     .nav-item.active{background:rgba(245,166,35,0.1);color:var(--accent)}
     .sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
-
-    /* Main */
     .main{overflow-y:auto;padding:28px 32px}
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
     .page-title{font-family:var(--font-d);font-size:22px;font-weight:700}
@@ -57,19 +51,13 @@
     .btn-primary:hover{opacity:0.88}
     .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
     .btn-ghost{background:var(--surface);border:1px solid var(--border2);color:var(--text2)}
-
-    /* Stats row */
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
     .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
     .stat-card.accent{border-color:rgba(245,166,35,0.2);background:rgba(245,166,35,0.04)}
     .stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:8px}
     .stat-value{font-family:var(--font-d);font-size:28px;font-weight:700}
     .stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
-
-    /* Panel system */
     .panel{display:none} .panel.active{display:block}
-
-    /* Digest card */
     .digest-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px}
     .digest-card-header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
     .digest-card-header:hover{background:rgba(255,255,255,0.02)}
@@ -80,7 +68,6 @@
     .badge-sent{background:rgba(74,222,128,0.1);color:#4ade80}
     .badge-pending{background:rgba(251,191,36,0.1);color:#fbbf24}
     .digest-body{padding:20px 22px;display:none}
-
     .insight-section{margin-bottom:20px}
     .insight-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px}
     .issue-item{display:flex;gap:10px;padding:10px 14px;background:rgba(232,67,106,0.05);border:1px solid rgba(232,67,106,0.15);border-radius:8px;margin-bottom:8px;font-size:13px;color:var(--text2)}
@@ -92,20 +79,14 @@
     .prio-low{background:rgba(74,222,128,0.15);color:#4ade80}
     .action-text{font-size:13px;color:var(--text2);flex:1}
     .summary-box{background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px}
-
-    /* Empty/loading states */
     .empty{text-align:center;padding:60px 20px;color:var(--text3)}
     .empty-icon{font-size:40px;margin-bottom:12px}
     .loader{width:28px;height:28px;border:3px solid var(--surface);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:40px auto}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* Toast */
-    .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;max-width:320px}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:9999;max-width:320px}
     .toast.show{transform:translateY(0);opacity:1}
     .toast.success{border-color:rgba(74,222,128,0.3);color:#4ade80}
     .toast.error{border-color:rgba(248,113,113,0.3);color:#f87171}
-
-    /* Business / GMB panel */
     .connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;max-width:480px;margin:0 auto}
     .connect-icon{font-size:48px;margin-bottom:16px}
     .connect-title{font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:8px}
@@ -121,7 +102,7 @@
     .account-type{font-size:11px;color:var(--text3);margin-top:2px}
     .location-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
     .location-card:hover,.location-card.selected{border-color:var(--accent)}
-    .review-row{background:var(--bg3,#1a1a26);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+    .review-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
     .review-row-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
     .reviewer-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
     .reviewer-name{font-size:13px;font-weight:600;color:var(--text)}
@@ -137,48 +118,47 @@
     .btn-reject{background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)}
     .posted-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#4ade80;background:rgba(74,222,128,0.1);padding:3px 9px;border-radius:4px}
     .section-divider{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin:20px 0 10px}
+    .mtab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;margin-bottom:-1px;font-family:var(--font-b)}
+    .mtab.active{color:var(--accent);border-bottom-color:var(--accent)}
   </style>
 </head>
 <body>
+
 <div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
-  <span></span>
-  <span></span>
-  <span></span>
+  <span></span><span></span><span></span>
 </div>
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()" style="display:none"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar">
-  <!-- Sidebar content unchanged -->
   <div class="logo">🍽 Revaris</div>
   <div class="org-chip">
     <div class="org-name" id="orgName">Loading…</div>
     <div class="org-plan" id="orgPlan">starter</div>
   </div>
   <div class="nav-label">Menu</div>
-  <button class="nav-item active" onclick="showPanel('overview', this)">📊 Overview</button>
-  <button class="nav-item" onclick="showPanel('digests', this)">📧 Digests</button>
-  <button class="nav-item" onclick="showPanel('business', this)">🏪 Business</button>
-  <button class="nav-item" onclick="showPanel('competitive', this)">🏆 Competitive Analysis</button>
-  <button class="nav-item" onclick="showPanel('settings', this)">⚙ Settings</button>
+  <button class="nav-item active" onclick="showPanel('overview',this)">📊 Overview</button>
+  <button class="nav-item" onclick="showPanel('digests',this)">📧 Digests</button>
+  <button class="nav-item" onclick="showPanel('business',this)">🏪 Business</button>
+  <button class="nav-item" onclick="showPanel('competitive',this)">🏆 Competitive Analysis</button>
+  <button class="nav-item" onclick="showPanel('settings',this)">⚙ Settings</button>
   <div class="sidebar-footer">
-    <button class="nav-item" onclick="logout()">← Logout</button>
+    <button class="nav-item" onclick="doLogout()">← Logout</button>
   </div>
 </aside>
 
 <!-- Main -->
 <main class="main">
 
-  <!-- Overview panel -->
+  <!-- Overview -->
   <div class="panel active" id="panel-overview">
     <div class="topbar">
       <div>
         <div class="page-title">Overview</div>
         <div class="page-sub" id="overviewSub">Loading your restaurant data…</div>
       </div>
-      <button class="btn btn-primary" id="genBtn" onclick="generateDigest()">⚡ Generate Digest Now</button>
+      <button class="btn btn-primary" id="genBtn" onclick="generateDigest(this)">⚡ Generate Digest Now</button>
     </div>
-
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Current Rating</div>
@@ -201,26 +181,22 @@
         <div class="stat-sub">unaddressed</div>
       </div>
     </div>
-
-    <!-- Latest digest summary -->
-    <div id="latestDigestZone">
-      <div class="loader"></div>
-    </div>
+    <div id="latestDigestZone"><div class="loader"></div></div>
   </div>
 
-  <!-- Digests panel -->
+  <!-- Digests -->
   <div class="panel" id="panel-digests">
     <div class="topbar">
       <div>
         <div class="page-title">Digest History</div>
         <div class="page-sub">All weekly reports for your restaurant</div>
       </div>
-      <button class="btn btn-primary" onclick="generateDigest()">⚡ Generate Now</button>
+      <button class="btn btn-primary" onclick="generateDigest(this)">⚡ Generate Now</button>
     </div>
     <div id="digestList"><div class="loader"></div></div>
   </div>
 
-  <!-- Business / GMB panel -->
+  <!-- Business / GMB -->
   <div class="panel" id="panel-business">
     <div class="topbar">
       <div>
@@ -229,7 +205,7 @@
       </div>
     </div>
 
-    <!-- Not connected state -->
+    <!-- Not connected -->
     <div id="gmbNotConnected">
       <div class="connect-card">
         <div class="connect-icon">🔗</div>
@@ -254,20 +230,18 @@
       </div>
     </div>
 
-    <!-- Connected state -->
+    <!-- Connected -->
     <div id="gmbConnected" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
         <div class="connected-badge">✓ Google Business Connected</div>
         <button class="btn btn-ghost btn-sm" onclick="disconnectGoogle()" style="font-size:12px;padding:6px 14px">Disconnect</button>
       </div>
 
-      <!-- Step 1: Select Account -->
       <div id="gmbStep1">
         <div class="section-divider">Step 1 — Select your business account</div>
         <div id="accountsList"><div class="loader"></div></div>
       </div>
 
-      <!-- Step 2: Select Location -->
       <div id="gmbStep2" style="display:none">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
           <button class="btn-sm btn-regen" onclick="backToAccounts()">← Back</button>
@@ -276,7 +250,6 @@
         <div id="locationsList"><div class="loader"></div></div>
       </div>
 
-      <!-- Step 3: Reviews + Replies -->
       <div id="gmbStep3" style="display:none">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
           <div style="display:flex;align-items:center;gap:10px">
@@ -285,24 +258,19 @@
           </div>
           <button class="btn btn-primary" style="font-size:12px;padding:7px 16px" onclick="loadReviews()">↻ Refresh Reviews</button>
         </div>
-
-        <!-- Pending replies tab -->
         <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0">
           <button class="mtab active" id="tabPending" onclick="switchReviewTab('pending',this)">⏳ Pending Replies</button>
           <button class="mtab" id="tabAll" onclick="switchReviewTab('all',this)">📋 All Reviews</button>
         </div>
-
         <div id="pendingRepliesZone"><div class="loader"></div></div>
         <div id="allReviewsZone" style="display:none"><div class="loader"></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Settings panel -->
+  <!-- Settings -->
   <div class="panel" id="panel-settings">
-    <div class="topbar">
-      <div class="page-title">Settings</div>
-    </div>
+    <div class="topbar"><div class="page-title">Settings</div></div>
     <div style="max-width:520px">
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px">
         <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em">Business Details</div>
@@ -331,32 +299,71 @@
       <div style="background:var(--bg2);border:1px solid rgba(248,113,113,0.15);border-radius:16px;padding:24px">
         <div style="font-size:13px;font-weight:600;color:#f87171;margin-bottom:8px">Subscription</div>
         <p style="font-size:13px;color:var(--text3);margin-bottom:16px">Your plan: <strong style="color:var(--text)" id="planDisplay">Starter</strong></p>
-        <button class="btn" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)" onclick="if(confirm('Cancel subscription?')) toast('Contact support@Revaris.in to cancel', 'error')">Cancel Subscription</button>
+        <button class="btn" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)" onclick="if(confirm('Cancel subscription?')) toast('Contact support@revaris.in to cancel','error')">Cancel Subscription</button>
       </div>
     </div>
   </div>
 
-    <!-- Competitive Analysis panel -->
-    <div class="panel" id="panel-competitive">
-      <div class="topbar">
-        <div>
-          <div class="page-title">Competitive Analysis</div>
-          <div class="page-sub">See how your restaurant compares to nearby competitors</div>
-        </div>
-        <button class="btn btn-primary" onclick="loadCompetitiveReport(true)">↻ Refresh Report</button>
+  <!-- Competitive Analysis -->
+  <div class="panel" id="panel-competitive">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Competitive Analysis</div>
+        <div class="page-sub">See how your restaurant compares to nearby competitors</div>
       </div>
-      <div id="competitiveReportZone"></div>
-      <canvas id="competitiveChart" style="margin-top:32px;max-width:700px;display:none"></canvas>
+      <button class="btn btn-primary" onclick="loadCompetitiveReport(true)">↻ Refresh Report</button>
     </div>
+    <div id="competitiveReportZone"></div>
+    <canvas id="competitiveChart" style="margin-top:32px;max-width:700px;display:none"></canvas>
+  </div>
 
 </main>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// Hamburger menu logic for mobile sidebar
+<!-- Chart.js for competitive chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="module">
+import { API_BASE_URL } from './config.js';
+
+// ─────────────────────────────────────────────────────────────────────
+// Module-level state
+// ─────────────────────────────────────────────────────────────────────
+let orgData          = null;
+let allDigests       = [];
+let gmbConnected     = false;
+let selectedAccount  = null;
+let selectedLocation = null;
+let allReviews       = [];
+let pendingReplies   = [];
+
+const STAR_MAP = { ONE:1, TWO:2, THREE:3, FOUR:4, FIVE:5 };
+
+// ─────────────────────────────────────────────────────────────────────
+// Auth-aware fetch — always sends Bearer token
+// ─────────────────────────────────────────────────────────────────────
+async function apiFetch(path, method = 'GET', body = null) {
+  const token = localStorage.getItem('session');
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+    }
+  };
+  if (body !== null) opts.body = JSON.stringify(body);
+  const res  = await fetch(API_BASE_URL + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || data.message || 'Request failed (' + res.status + ')');
+  return data;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Sidebar / mobile
+// ─────────────────────────────────────────────────────────────────────
 function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
+  const sidebar  = document.querySelector('.sidebar');
   const backdrop = document.getElementById('sidebarBackdrop');
   sidebar.classList.toggle('open');
   backdrop.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
@@ -365,35 +372,70 @@ function closeSidebar() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarBackdrop').style.display = 'none';
 }
-// Close sidebar on navigation (mobile)
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    if (window.innerWidth <= 900) closeSidebar();
-  });
-});
-let orgData = null;
-let allDigests = [];
+document.querySelectorAll('.nav-item').forEach(item =>
+  item.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); })
+);
 
-// ── Init ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
+// Panel navigation
+// ─────────────────────────────────────────────────────────────────────
+function showPanel(name, navEl) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+
+  if (name === 'business')    initBusinessPanel();
+  if (name === 'competitive') loadCompetitiveReport(false);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Bootstrap
+// ─────────────────────────────────────────────────────────────────────
 async function init() {
+  // Guard: redirect to login if no token
+  if (!localStorage.getItem('session')) {
+    window.location.href = '/login';
+    return;
+  }
+
+  // Handle OAuth redirect query params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('gmb_connected')) {
+    toast('✓ Google Business connected successfully!', 'success');
+    gmbConnected = true;
+    window.history.replaceState({}, '', '/dashboard');
+  }
+  if (params.get('gmb_error')) {
+    toast('OAuth error: ' + params.get('gmb_error'), 'error');
+    window.history.replaceState({}, '', '/dashboard');
+  }
+
   try {
-    const res  = await apiFetch('/api/auth/me');
-    orgData    = res.org;
-    document.getElementById('orgName').textContent  = orgData.businessName || orgData.name;
-    document.getElementById('orgPlan').textContent  = orgData.plan?.toUpperCase() || 'STARTER';
-    document.getElementById('overviewSub').textContent = orgData.businessName + ' · ' + orgData.location;
+    const res = await apiFetch('/api/auth/me');
+    orgData      = res.org;
+    gmbConnected = orgData.gmbConnected || false;
+
+    document.getElementById('orgName').textContent     = orgData.businessName || orgData.name;
+    document.getElementById('orgPlan').textContent     = (orgData.plan || 'starter').toUpperCase();
+    document.getElementById('overviewSub').textContent = (orgData.businessName || '') + ' · ' + (orgData.location || '');
     document.getElementById('planDisplay').textContent = orgData.plan || 'Starter';
-    document.getElementById('settingBiz').value     = orgData.businessName || '';
-    document.getElementById('settingLoc').value     = orgData.location || '';
-    document.getElementById('settingPlaceId').value = orgData.placeId || '';
-    document.getElementById('settingDay').value     = orgData.digestDay || 'monday';
+    document.getElementById('settingBiz').value        = orgData.businessName || '';
+    document.getElementById('settingLoc').value        = orgData.location     || '';
+    document.getElementById('settingPlaceId').value    = orgData.placeId      || '';
+    document.getElementById('settingDay').value        = orgData.digestDay    || 'monday';
+
     await loadDigests();
-  } catch(e) {
+  } catch (e) {
+    console.error('Init failed:', e);
+    localStorage.removeItem('session');
     window.location.href = '/login';
   }
 }
 
-// ── Load digests ──────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
+// Digests
+// ─────────────────────────────────────────────────────────────────────
 async function loadDigests() {
   const res  = await apiFetch('/api/org/digest');
   allDigests = res.digests || [];
@@ -402,13 +444,14 @@ async function loadDigests() {
 }
 
 function renderOverview() {
-  if (allDigests.length === 0) {
-    document.getElementById('statRating').textContent    = '—';
-    document.getElementById('statReviews').textContent   = '—';
-    document.getElementById('statLastDigest').textContent= 'Never';
-    document.getElementById('statEmailSent').textContent = 'Generate your first digest';
-    document.getElementById('statIssues').textContent    = '—';
-    document.getElementById('latestDigestZone').innerHTML= `
+  if (!allDigests.length) {
+    document.getElementById('statRating').textContent     = '—';
+    document.getElementById('statReviews').textContent    = '—';
+    document.getElementById('statLastDigest').textContent = 'Never';
+    document.getElementById('statEmailSent').textContent  = 'Generate your first digest';
+    document.getElementById('statIssues').textContent     = '—';
+    document.getElementById('statTrend').textContent      = '';
+    document.getElementById('latestDigestZone').innerHTML = `
       <div class="empty">
         <div class="empty-icon">📊</div>
         <p style="font-size:15px;color:var(--text);margin-bottom:8px">No digests yet</p>
@@ -418,19 +461,19 @@ function renderOverview() {
   }
 
   const latest = allDigests[0];
-  const d = latest.data;
+  const d      = latest.data || {};
   const rating = d.place?.rating;
   const rColor = rating >= 4 ? '#4ade80' : rating >= 3 ? '#fbbf24' : '#f87171';
 
-  document.getElementById('statRating').textContent    = rating ? rating.toFixed(1) + '★' : '—';
-  document.getElementById('statRating').style.color   = rColor;
-  document.getElementById('statReviews').textContent  = (d.place?.total_reviews || 0).toLocaleString();
-  document.getElementById('statLastDigest').textContent= fmtDate(latest.createdAt);
-  document.getElementById('statEmailSent').textContent= latest.emailSent ? '✓ Email sent' : 'In dashboard only';
-  document.getElementById('statTrend').textContent    = d.insight?.rating_summary?.trend || '';
-  document.getElementById('statIssues').textContent   = (d.insight?.unaddressed_issues || []).length;
+  document.getElementById('statRating').textContent     = rating ? rating.toFixed(1) + '★' : '—';
+  document.getElementById('statRating').style.color     = rColor;
+  document.getElementById('statReviews').textContent    = ((d.place?.total_reviews) || 0).toLocaleString();
+  document.getElementById('statLastDigest').textContent = fmtDate(latest.createdAt);
+  document.getElementById('statEmailSent').textContent  = latest.emailSent ? '✓ Email sent' : 'In dashboard only';
+  document.getElementById('statTrend').textContent      = d.insight?.rating_summary?.trend || '';
+  document.getElementById('statIssues').textContent     = (d.insight?.unaddressed_issues || []).length;
 
-  document.getElementById('latestDigestZone').innerHTML = buildDigestDetail(latest, true);
+  document.getElementById('latestDigestZone').innerHTML = buildDigestDetail(latest);
 }
 
 function renderDigestList() {
@@ -443,64 +486,64 @@ function renderDigestList() {
 }
 
 function buildDigestCard(digest, expanded) {
-  const d = digest.data;
-  const weekLabel = `Week ${d.weekNumber || '—'}`;
-  const dateLabel = fmtDate(digest.createdAt);
+  const d      = digest.data || {};
   const issues = d.insight?.unaddressed_issues || [];
-  const actions = d.insight?.action_items || [];
-
   return `
-  <div class="digest-card">
-    <div class="digest-card-header" onclick="toggleDigest(this)">
-      <div>
-        <div class="digest-week">${weekLabel} · ${d.businessName || ''}</div>
-        <div class="digest-date">${dateLabel} · ${d.place?.rating?.toFixed(1) || '—'}★ · ${issues.length} issues</div>
+    <div class="digest-card">
+      <div class="digest-card-header" onclick="toggleDigest(this)">
+        <div>
+          <div class="digest-week">Week ${d.weekNumber || '—'} · ${escHtml(d.businessName || '')}</div>
+          <div class="digest-date">${fmtDate(digest.createdAt)} · ${d.place?.rating?.toFixed(1) || '—'}★ · ${issues.length} issues</div>
+        </div>
+        <div class="digest-badges">
+          <span class="badge ${digest.emailSent ? 'badge-sent' : 'badge-pending'}">${digest.emailSent ? 'Email Sent' : 'In App'}</span>
+          <span style="color:var(--text3);font-size:16px">${expanded ? '▲' : '▼'}</span>
+        </div>
       </div>
-      <div class="digest-badges">
-        <span class="badge ${digest.emailSent ? 'badge-sent' : 'badge-pending'}">${digest.emailSent ? 'Email Sent' : 'In App'}</span>
-        <span style="color:var(--text3);font-size:16px">${expanded ? '▲' : '▼'}</span>
+      <div class="digest-body" style="display:${expanded ? 'block' : 'none'}">
+        ${buildDigestDetail(digest)}
       </div>
-    </div>
-    <div class="digest-body" style="display:${expanded ? 'block' : 'none'}">
-      ${buildDigestDetail(digest, false)}
-    </div>
-  </div>`;
+    </div>`;
 }
 
-function buildDigestDetail(digest, forOverview) {
-  const d = digest.data;
-  const insight = d.insight || {};
-  const issues  = insight.unaddressed_issues || [];
-  const actions = insight.action_items || [];
-  const positives = insight.top_positives || [];
+function buildDigestDetail(digest) {
+  const d        = digest.data || {};
+  const insight  = d.insight || {};
+  const issues   = insight.unaddressed_issues || [];
+  const actions  = insight.action_items || [];
+  const positives= insight.top_positives || [];
 
   const issuesHtml = issues.map((iss, i) => `
-    <div class="issue-item">
-      <span class="issue-num">#${i+1}</span>
-      <span>${escHtml(iss)}</span>
-    </div>`).join('') || '<p style="color:var(--text3);font-size:13px">No unaddressed issues found.</p>';
+    <div class="issue-item"><span class="issue-num">#${i+1}</span><span>${escHtml(iss)}</span></div>
+  `).join('') || '<p style="color:var(--text3);font-size:13px">No unaddressed issues found.</p>';
 
   const actionsHtml = actions.map(a => `
     <div class="action-item">
-      <span class="action-prio prio-${a.priority||'medium'}">${(a.priority||'medium').toUpperCase()}</span>
+      <span class="action-prio prio-${a.priority || 'medium'}">${(a.priority || 'medium').toUpperCase()}</span>
       <div class="action-text">
         <div>${escHtml(a.action)}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">${escHtml(a.expected_impact||'')}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${escHtml(a.expected_impact || '')}</div>
       </div>
     </div>`).join('');
 
-  const positivesHtml = positives.map(p => `<div style="font-size:13px;color:#4ade80;padding:4px 0;display:flex;gap:8px"><span>✓</span><span>${escHtml(p)}</span></div>`).join('');
+  const positivesHtml = positives.map(p =>
+    `<div style="font-size:13px;color:#4ade80;padding:4px 0;display:flex;gap:8px"><span>✓</span><span>${escHtml(p)}</span></div>`
+  ).join('');
+
+  const trendIcon = { improving:'📈', stable:'➡️', declining:'📉' }[insight.rating_summary?.trend] || '➡️';
+  const rating    = d.place?.rating || 0;
+  const rColor    = rating >= 4 ? '#4ade80' : rating >= 3 ? '#fbbf24' : '#f87171';
 
   return `
     ${insight.executive_summary ? `<div class="summary-box"><strong>Summary:</strong> ${escHtml(insight.executive_summary)}</div>` : ''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
       <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center">
-        <div style="font-family:var(--font-d);font-size:24px;font-weight:700;color:${(d.place?.rating||0)>=4?'#4ade80':(d.place?.rating||0)>=3?'#fbbf24':'#f87171'}">${d.place?.rating?.toFixed(1)||'—'}★</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:4px">Rating · ${(d.place?.total_reviews||0).toLocaleString()} reviews</div>
+        <div style="font-family:var(--font-d);font-size:24px;font-weight:700;color:${rColor}">${rating ? rating.toFixed(1) : '—'}★</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Rating · ${((d.place?.total_reviews) || 0).toLocaleString()} reviews</div>
       </div>
       <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center">
-        <div style="font-size:20px">${{improving:'📈',stable:'➡️',declining:'📉'}[insight.rating_summary?.trend]||'➡️'}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:4px;text-transform:capitalize">${insight.rating_summary?.trend||'stable'}</div>
+        <div style="font-size:20px">${trendIcon}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:4px;text-transform:capitalize">${insight.rating_summary?.trend || 'stable'}</div>
         <div style="font-size:11px;color:var(--text3)">Trend</div>
       </div>
     </div>
@@ -510,28 +553,32 @@ function buildDigestDetail(digest, forOverview) {
     </div>
     ${actionsHtml ? `<div class="insight-section"><div class="insight-title">🎯 Recommended Actions</div>${actionsHtml}</div>` : ''}
     ${positivesHtml ? `<div class="insight-section"><div class="insight-title">✅ What Customers Love</div>${positivesHtml}</div>` : ''}
-    ${insight.competitor_alert ? `<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text2)"><strong style="color:#fbbf24">🔍 Competitor Alert:</strong> ${escHtml(insight.competitor_alert)}</div>` : ''}
-  `;
+    ${insight.competitor_alert ? `<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text2)"><strong style="color:#fbbf24">🔍 Competitor Alert:</strong> ${escHtml(insight.competitor_alert)}</div>` : ''}`;
 }
 
-// ── Generate digest ───────────────────────────────────────────────────
-async function generateDigest() {
-  const btn = document.getElementById('genBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Generating…';
+// ─────────────────────────────────────────────────────────────────────
+// Generate digest  ← FIX: correct endpoint + button param
+// ─────────────────────────────────────────────────────────────────────
+async function generateDigest(btn) {
+  // btn is passed directly from onclick="generateDigest(this)"
+  const activeBtn = btn instanceof HTMLElement ? btn : document.getElementById('genBtn');
+  const origText  = activeBtn ? activeBtn.textContent : '';
+  if (activeBtn) { activeBtn.disabled = true; activeBtn.textContent = '⏳ Generating…'; }
   try {
+    // ✅ Correct endpoint: POST /api/org/digest/generate
     const res = await apiFetch('/api/org/digest/generate', 'POST');
     toast('Digest generated! ' + (res.emailSent ? 'Email sent ✓' : 'Check dashboard.'), 'success');
     await loadDigests();
-  } catch(e) {
+  } catch (e) {
     toast('Failed: ' + e.message, 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = '⚡ Generate Digest Now';
+    if (activeBtn) { activeBtn.disabled = false; activeBtn.textContent = origText || '⚡ Generate Digest Now'; }
   }
 }
 
-// ── Settings ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
+// Settings
+// ─────────────────────────────────────────────────────────────────────
 async function saveSettings() {
   try {
     await apiFetch('/api/org/profile', 'POST', {
@@ -541,77 +588,58 @@ async function saveSettings() {
       digestDay:    document.getElementById('settingDay').value
     });
     toast('Settings saved!', 'success');
-  } catch(e) {
+  } catch (e) {
     toast('Save failed: ' + e.message, 'error');
   }
 }
 
-// ── Logout ────────────────────────────────────────────────────────────
-async function logout() {
-  await apiFetch('/api/auth/logout', 'POST').catch(()=>{});
+// ─────────────────────────────────────────────────────────────────────
+// Logout
+// ─────────────────────────────────────────────────────────────────────
+async function doLogout() {
+  try { await apiFetch('/api/auth/logout', 'POST'); } catch (_) {}
   localStorage.removeItem('session');
   window.location.href = '/login';
 }
 
-// ── UI helpers ────────────────────────────────────────────────────────
-function showPanel(name, navEl) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(navEl) navEl.classList.add('active');
-}
-
+// ─────────────────────────────────────────────────────────────────────
+// UI helpers
+// ─────────────────────────────────────────────────────────────────────
 function toggleDigest(headerEl) {
-  const body = headerEl.nextElementSibling;
+  const body  = headerEl.nextElementSibling;
   const arrow = headerEl.querySelector('span:last-child');
   const open  = body.style.display === 'block';
   body.style.display = open ? 'none' : 'block';
-  arrow.textContent  = open ? '▼' : '▲';
+  if (arrow) arrow.textContent = open ? '▼' : '▲';
 }
 
 function fmtDate(iso) {
+  if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
 }
 
 function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function toast(msg, type='') {
+function toast(msg, type = '') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className   = 'toast show ' + type;
-  setTimeout(() => el.classList.remove('show'), 4000);
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-// ── API fetch wrapper ─────────────────────────────────────────────────
-async function apiFetch(url, method='GET', body=null) {
-  const token = localStorage.getItem('session');
-  const opts  = {
-    method, credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...(token ? {'x-session-token': token} : {}) }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  const res  = await fetch(url, opts);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
-}
-
-init();
-
-// ══════════════════════════════════════════════════════════════════════
-// GMB / Business panel logic
-// ══════════════════════════════════════════════════════════════════════
-let selectedAccount  = null;
-let selectedLocation = null;
-let allReviews       = [];
-let pendingReplies   = [];
-
-// Called when Business panel opens
+// ─────────────────────────────────────────────────────────────────────
+// GMB — Business panel
+// ─────────────────────────────────────────────────────────────────────
 async function initBusinessPanel() {
-  const tokens = db_gmbConnected;
-  if (tokens) {
+  try {
+    const res    = await apiFetch('/api/auth/me');
+    gmbConnected = res.org?.gmbConnected || false;
+  } catch (_) { gmbConnected = false; }
+
+  if (gmbConnected) {
     showGmbConnected();
     await loadAccounts();
   } else {
@@ -619,107 +647,103 @@ async function initBusinessPanel() {
   }
 }
 
-// Check URL params on load for OAuth redirect results
-function checkOAuthResult() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('gmb_connected')) {
-    toast('✓ Google Business connected successfully!', 'success');
-    db_gmbConnected = true;
-    window.history.replaceState({}, '', '/dashboard');
-  }
-  if (params.get('gmb_error')) {
-    toast('OAuth error: ' + params.get('gmb_error'), 'error');
-    window.history.replaceState({}, '', '/dashboard');
-  }
-}
-
-let db_gmbConnected = false;
-
-
-
 function showGmbConnected() {
   document.getElementById('gmbNotConnected').style.display = 'none';
   document.getElementById('gmbConnected').style.display    = 'block';
 }
-
 function showGmbNotConnected() {
   document.getElementById('gmbNotConnected').style.display = 'block';
   document.getElementById('gmbConnected').style.display    = 'none';
 }
 
-// ── Connect / Disconnect ──────────────────────────────────────────────
-function connectGoogle() {
-  window.location.href = '/api/oauth/connect';
+// ── Connect with Google  ← FIX: send XHR header so Spring returns JSON
+async function connectGoogle() {
+  try {
+    const token = localStorage.getItem('session');
+    const res   = await fetch(API_BASE_URL + '/api/oauth/connect', {
+      method: 'GET',
+      headers: {
+        'Authorization':    token ? 'Bearer ' + token : '',
+        'Accept':           'application/json',
+        'X-Requested-With': 'XMLHttpRequest'   // ← tells Spring to return JSON {redirectUrl}
+      }
+    });
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+    const data = await res.json();
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    } else {
+      toast('OAuth redirect URL missing in server response', 'error');
+    }
+  } catch (e) {
+    toast('Failed to start Google OAuth: ' + e.message, 'error');
+  }
 }
 
 async function disconnectGoogle() {
   if (!confirm('Disconnect your Google Business account?')) return;
-  await apiFetch('/api/oauth/disconnect', 'POST');
-  db_gmbConnected = false;
-  showGmbNotConnected();
-  toast('Google Business disconnected', '');
+  try {
+    await apiFetch('/api/oauth/disconnect', 'POST');
+    gmbConnected = false;
+    showGmbNotConnected();
+    toast('Google Business disconnected', '');
+  } catch (e) {
+    toast('Disconnect failed: ' + e.message, 'error');
+  }
 }
 
-// ── Step 1: Load accounts ─────────────────────────────────────────────
+// ── Step 1: accounts ──────────────────────────────────────────────────
 async function loadAccounts() {
   const el = document.getElementById('accountsList');
   el.innerHTML = '<div class="loader"></div>';
   document.getElementById('gmbStep1').style.display = 'block';
   document.getElementById('gmbStep2').style.display = 'none';
   document.getElementById('gmbStep3').style.display = 'none';
-
   try {
-    const data = await apiFetch('/api/gmb/accounts');
+    const data     = await apiFetch('/api/gmb/accounts');
     const accounts = data.accounts || [];
-
     if (!accounts.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-icon">🏪</div><p>No Google Business accounts found for this Google account.</p></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-icon">🏪</div><p>No Google Business accounts found.</p></div>';
       return;
     }
-
     el.innerHTML = accounts.map(acc => `
-      <div class="account-card" onclick="selectAccount('${escHtml(acc.name)}', '${escHtml(acc.accountName || acc.name)}', this)">
+      <div class="account-card" onclick="selectAccount('${escHtml(acc.name)}','${escHtml(acc.accountName||acc.name)}',this)">
         <div class="account-name">${escHtml(acc.accountName || acc.name)}</div>
         <div class="account-type">${escHtml(acc.type || 'Business Account')} · ${escHtml(acc.name)}</div>
-      </div>
-    `).join('');
-  } catch(e) {
+      </div>`).join('');
+  } catch (e) {
     el.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
   }
 }
 
-// ── Step 2: Select account → load locations ────────────────────────────
+// ── Step 2: locations ─────────────────────────────────────────────────
 async function selectAccount(accountName, displayName, el) {
   document.querySelectorAll('.account-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   selectedAccount = accountName;
-
   document.getElementById('gmbStep1').style.display = 'none';
   document.getElementById('gmbStep2').style.display = 'block';
 
   const locEl = document.getElementById('locationsList');
   locEl.innerHTML = '<div class="loader"></div>';
-
   try {
-    const data      = await apiFetch(`/api/gmb/locations?accountName=${encodeURIComponent(accountName)}`);
+    const data      = await apiFetch('/api/gmb/locations?accountName=' + encodeURIComponent(accountName));
     const locations = data.locations || [];
-
     if (!locations.length) {
       locEl.innerHTML = '<div class="empty"><p>No locations found for this account.</p></div>';
       return;
     }
-
     locEl.innerHTML = locations.map(loc => {
-      const address = loc.storefrontAddress
+      const addr = loc.storefrontAddress
         ? [loc.storefrontAddress.addressLines?.[0], loc.storefrontAddress.locality].filter(Boolean).join(', ')
         : '';
       return `
-        <div class="location-card" onclick="selectLocation('${escHtml(loc.name)}', '${escHtml(loc.title)}', this)">
+        <div class="location-card" onclick="selectLocation('${escHtml(loc.name)}','${escHtml(loc.title)}',this)">
           <div class="account-name">${escHtml(loc.title)}</div>
-          <div class="account-type">${escHtml(address)} · ${escHtml(loc.name)}</div>
+          <div class="account-type">${escHtml(addr)} · ${escHtml(loc.name)}</div>
         </div>`;
     }).join('');
-  } catch(e) {
+  } catch (e) {
     locEl.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
   }
 }
@@ -729,15 +753,13 @@ function backToAccounts() {
   document.getElementById('gmbStep2').style.display = 'none';
 }
 
-// ── Step 3: Select location → load reviews ─────────────────────────────
+// ── Step 3: reviews ───────────────────────────────────────────────────
 async function selectLocation(locationName, displayName, el) {
   document.querySelectorAll('.location-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   selectedLocation = locationName;
-
   document.getElementById('gmbStep2').style.display = 'none';
   document.getElementById('gmbStep3').style.display = 'block';
-
   await loadReviews();
 }
 
@@ -749,134 +771,87 @@ function backToLocations() {
 async function loadReviews() {
   document.getElementById('pendingRepliesZone').innerHTML = '<div class="loader"></div>';
   document.getElementById('allReviewsZone').innerHTML     = '<div class="loader"></div>';
-
   try {
-    const params = `accountName=${encodeURIComponent(selectedAccount)}&locationId=${encodeURIComponent(selectedLocation)}`;
-    const data   = await apiFetch('/api/gmb/reviews?' + params);
-    allReviews   = data.reviews || [];
-
+    const params      = 'accountName=' + encodeURIComponent(selectedAccount) + '&locationId=' + encodeURIComponent(selectedLocation);
+    const data        = await apiFetch('/api/gmb/reviews?' + params);
+    allReviews        = data.reviews || [];
     const pendingData = await apiFetch('/api/gmb/pending-replies');
     pendingReplies    = pendingData.replies || [];
-
     renderPendingReplies();
     renderAllReviews();
-
     if (data.pending_suggestions > 0) {
-      toast(`AI generated ${data.pending_suggestions} reply suggestions`, 'success');
+      toast('AI generated ' + data.pending_suggestions + ' reply suggestion(s)', 'success');
     }
-  } catch(e) {
+  } catch (e) {
     document.getElementById('pendingRepliesZone').innerHTML =
       `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
   }
 }
 
-// ── Render pending AI reply suggestions ───────────────────────────────
 function renderPendingReplies() {
   const el      = document.getElementById('pendingRepliesZone');
   const pending = pendingReplies.filter(r => r.status === 'pending');
-
   if (!pending.length) {
     el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>No pending replies. All reviews have been responded to.</p></div>';
     return;
   }
-
+  const COLORS = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'];
   el.innerHTML = pending.map(r => {
-    const stars   = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-    const avatarC = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'][r.reviewerName.charCodeAt(0) % 5];
-    const initials= r.reviewerName.slice(0,2).toUpperCase();
-
+    const stars    = '★'.repeat(r.rating || 0) + '☆'.repeat(Math.max(0, 5 - (r.rating || 0)));
+    const avatarC  = COLORS[(r.reviewerName || '?').charCodeAt(0) % COLORS.length];
+    const initials = (r.reviewerName || '??').slice(0, 2).toUpperCase();
+    // ✅ Use data-id attribute; JS reads it as Number — avoids string/Long mismatch
     return `
-    <div class="review-row" id="reply_${r.id}">
-      <div class="review-row-header">
-        <div class="reviewer-avatar" style="background:${avatarC}">${initials}</div>
-        <div>
-          <div class="reviewer-name">${escHtml(r.reviewerName)}</div>
+      <div class="review-row" id="reply_${r.id}">
+        <div class="review-row-header">
+          <div class="reviewer-avatar" style="background:${avatarC}">${initials}</div>
+          <div><div class="reviewer-name">${escHtml(r.reviewerName)}</div></div>
+          <div class="review-stars">${stars} ${r.rating}/5</div>
         </div>
-        <div class="review-stars">${stars} ${r.rating}/5</div>
-      </div>
-      <div class="review-text">"${escHtml(r.reviewText)}"</div>
-
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:6px">
-        🤖 AI Suggested Reply
-      </div>
-      <textarea class="reply-box" id="replyText_${r.id}">${escHtml(r.suggestedReply)}</textarea>
-      <div class="reply-actions">
-        <button class="btn-sm btn-approve" onclick="approveReply('${r.id}')">✓ Post Reply</button>
-        <button class="btn-sm btn-regen"   onclick="regenReply('${r.id}')">↻ Regenerate</button>
-        <button class="btn-sm btn-reject"  onclick="rejectReply('${r.id}')">✕ Dismiss</button>
-      </div>
-    </div>`;
+        <div class="review-text">"${escHtml(r.reviewText)}"</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:6px">🤖 AI Suggested Reply</div>
+        <textarea class="reply-box" id="replyText_${r.id}">${escHtml(r.suggestedReply)}</textarea>
+        <div class="reply-actions">
+          <button class="btn-sm btn-approve" data-id="${r.id}" onclick="approveReply(this)">✓ Post Reply</button>
+          <button class="btn-sm btn-regen"   data-id="${r.id}" onclick="regenReply(this)">↻ Regenerate</button>
+          <button class="btn-sm btn-reject"  data-id="${r.id}" onclick="rejectReply(this)">✕ Dismiss</button>
+        </div>
+      </div>`;
   }).join('');
 }
 
-// ── Render all reviews ────────────────────────────────────────────────
 function renderAllReviews() {
   const el = document.getElementById('allReviewsZone');
   if (!allReviews.length) {
     el.innerHTML = '<div class="empty"><p>No reviews found for this location.</p></div>';
     return;
   }
-
+  const COLORS = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'];
   el.innerHTML = allReviews.map(r => {
-    const rating  = starRatingMap[r.starRating] || 3;
-    const stars   = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-    const name    = r.reviewer?.displayName || 'Anonymous';
-    const avatarC = ['#f5a623','#4facfe','#43e97b','#fa709a','#a18cd1'][name.charCodeAt(0) % 5];
-    const hasReply= !!r.reviewReply;
-
+    const rating   = STAR_MAP[r.starRating] || 3;
+    const stars    = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const name     = r.reviewer?.displayName || 'Anonymous';
+    const avatarC  = COLORS[name.charCodeAt(0) % COLORS.length];
+    const hasReply = !!r.reviewReply;
     return `
-    <div class="review-row">
-      <div class="review-row-header">
-        <div class="reviewer-avatar" style="background:${avatarC}">${name.slice(0,2).toUpperCase()}</div>
-        <div>
-          <div class="reviewer-name">${escHtml(name)}</div>
-          <div class="reviewer-time">${escHtml(r.createTime ? new Date(r.createTime).toLocaleDateString('en-IN') : '')}</div>
+      <div class="review-row">
+        <div class="review-row-header">
+          <div class="reviewer-avatar" style="background:${avatarC}">${name.slice(0,2).toUpperCase()}</div>
+          <div>
+            <div class="reviewer-name">${escHtml(name)}</div>
+            <div class="reviewer-time">${r.createTime ? new Date(r.createTime).toLocaleDateString('en-IN') : ''}</div>
+          </div>
+          <div class="review-stars">${stars}</div>
         </div>
-        <div class="review-stars">${stars}</div>
-      </div>
-      <div class="review-text">"${escHtml(r.comment || '(No text)')}"</div>
-      ${hasReply ? `
-        <div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);border-radius:8px;padding:10px 12px;margin-top:8px">
-          <div style="font-size:10px;font-weight:700;color:#4ade80;margin-bottom:4px">OWNER REPLY</div>
-          <div style="font-size:13px;color:var(--text2)">${escHtml(r.reviewReply.comment)}</div>
-        </div>` : '<div style="font-size:11px;color:var(--text3);margin-top:4px">No reply yet</div>'}
-    </div>`;
+        <div class="review-text">"${escHtml(r.comment || '(No text)')}"</div>
+        ${hasReply
+          ? `<div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);border-radius:8px;padding:10px 12px;margin-top:8px">
+               <div style="font-size:10px;font-weight:700;color:#4ade80;margin-bottom:4px">OWNER REPLY</div>
+               <div style="font-size:13px;color:var(--text2)">${escHtml(r.reviewReply.comment)}</div>
+             </div>`
+          : '<div style="font-size:11px;color:var(--text3);margin-top:4px">No reply yet</div>'}
+      </div>`;
   }).join('');
-}
-
-const starRatingMap = { ONE:1, TWO:2, THREE:3, FOUR:4, FIVE:5 };
-
-// ── Reply actions ─────────────────────────────────────────────────────
-async function approveReply(replyId) {
-  const editedText = document.getElementById('replyText_' + replyId)?.value;
-  try {
-    await apiFetch('/api/gmb/reply/approve', 'POST', { replyId, editedText });
-    document.getElementById('reply_' + replyId).innerHTML =
-      '<div class="posted-badge">✓ Reply posted to Google Maps</div>';
-    toast('Reply posted successfully!', 'success');
-  } catch(e) {
-    toast('Failed to post reply: ' + e.message, 'error');
-  }
-}
-
-async function regenReply(replyId) {
-  const btn = event.target;
-  btn.textContent = '⏳ Regenerating…'; btn.disabled = true;
-  try {
-    const data = await apiFetch('/api/gmb/reply/regenerate', 'POST', { replyId });
-    const ta   = document.getElementById('replyText_' + replyId);
-    if (ta) ta.value = data.suggestedReply;
-    toast('New reply generated!', 'success');
-  } catch(e) {
-    toast('Regeneration failed: ' + e.message, 'error');
-  } finally { btn.textContent = '↻ Regenerate'; btn.disabled = false; }
-}
-
-async function rejectReply(replyId) {
-  await apiFetch('/api/gmb/reply/reject', 'POST', { replyId });
-  const el = document.getElementById('reply_' + replyId);
-  if (el) el.style.opacity = '0.3';
-  toast('Reply dismissed', '');
 }
 
 function switchReviewTab(tab, btn) {
@@ -886,308 +861,432 @@ function switchReviewTab(tab, btn) {
   document.getElementById('allReviewsZone').style.display     = tab === 'all'     ? 'block' : 'none';
 }
 
-// ── Competitive Analysis ─────────────────────────────────────────────
-  async function loadCompetitiveReport(forcedRefresh = false) {
-    const zone = document.getElementById('competitiveReportZone');
-    zone.innerHTML = '<div class="loader"></div>';
-    document.getElementById('competitiveChart').style.display = 'none';
-    try {
-      let lat = orgData?.lat, lng = orgData?.lng;
-      if (!lat || !lng) {
-        const loc = encodeURIComponent(orgData.location || 'Noida');
-        const geo = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${loc}`).then(r=>r.json());
-        if (geo[0]) { lat = geo[0].lat; lng = geo[0].lon; }
-      }
-      if (!lat || !lng) throw new Error('Could not determine your location. Please update your profile.');
-      const res = await apiFetch('/api/competitive/report', 'POST', {
-        businessName: orgData.businessName,
-        lat: Number(lat),
-        lng: Number(lng),
-        type: 'restaurant',
-        forceRefresh: forcedRefresh
-      });
-      const report = res.report || [];
-      const aiInsights = res.aiInsights || {};
-      if (!report.length) {
-        zone.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>No competitors found nearby.</p></div>';
-        return;
-      }
-      let html = `<table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
-        <tr style="background:var(--surface)"><th style="padding:10px 8px;text-align:left">Rank</th><th style="padding:10px 8px;text-align:left">Name</th><th style="padding:10px 8px;text-align:left">Rating</th><th style="padding:10px 8px;text-align:left">Reviews</th></tr>
-        ${report.map((r,i)=>`<tr><td style="padding:8px">${i+1}</td><td style="padding:8px">${escHtml(r.name)}</td><td style="padding:8px">${r.rating||'—'}★</td><td style="padding:8px">${r.totalReviews}</td></tr>`).join('')}
-      </table>`;
-
-// AI Insights (Premium UI)
-if (aiInsights) {
-  html += `
-  <div style="
-    margin-top:32px;
-    background:var(--surface);
-    border-radius:14px;
-    padding:24px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.25);
-    font-family: Inter, system-ui, sans-serif;
-  ">
-
-    <!-- Header -->
-    <div style="
-      font-size:20px;
-      font-weight:700;
-      color:var(--text1);
-      margin-bottom:18px;
-    ">
-      Competitive Intelligence
-    </div>
-
-    ${aiInsights.summary ? `
-      <div style="
-        font-size:15px;
-        color:var(--text2);
-        line-height:1.6;
-        margin-bottom:20px;
-      ">
-        ${escHtml(aiInsights.summary)}
-      </div>
-    ` : ''}
-
-    <!-- Top Competitor -->
-    ${aiInsights.top_competitor ? `
-      <div style="
-        margin-bottom:20px;
-        padding:16px;
-        border-radius:10px;
-        background:linear-gradient(135deg, rgba(255,193,7,0.12), rgba(255,152,0,0.08));
-        border:1px solid rgba(255,193,7,0.25);
-      ">
-        <div style="font-size:13px;font-weight:600;color:#ffb300;margin-bottom:6px;">
-          Market Leader
-        </div>
-        <div style="font-size:15px;color:var(--text1);font-weight:600;">
-          ${escHtml(aiInsights.top_competitor.name)}
-        </div>
-        <div style="font-size:14px;color:var(--text2);margin-top:4px;line-height:1.5;">
-          ${escHtml(aiInsights.top_competitor.why_winning)}
-        </div>
-      </div>
-    ` : ''}
-
-    <!-- Competitor Section Wrapper -->
-    ${(aiInsights.competitor_analysis || []).length ? `
-      <div style="
-        margin-bottom:24px;
-        padding:18px;
-        border-radius:12px;
-        background:rgba(244,67,54,0.05);
-        border:1px solid rgba(244,67,54,0.2);
-      ">
-        <div style="
-          font-size:16px;
-          font-weight:600;
-          color:#ff6b6b;
-          margin-bottom:12px;
-        ">
-          Key Competitors
-        </div>
-
-        ${aiInsights.competitor_analysis.map(c => `
-          <div style="
-            margin-bottom:12px;
-            padding:14px;
-            border-radius:10px;
-            background:rgba(255,255,255,0.03);
-            border:1px solid rgba(255,255,255,0.05);
-          ">
-            <div style="font-size:15px;font-weight:600;color:var(--text1);">
-              ${escHtml(c.name)}
-            </div>
-
-            <div style="
-              font-size:13px;
-              color:var(--text2);
-              margin-top:6px;
-            ">
-              Positive ${c.sentiment.positive} · Neutral ${c.sentiment.neutral} · Negative ${c.sentiment.negative}
-              &nbsp;&nbsp;|&nbsp;&nbsp;
-              Growth ${(c.growth_rate * 100).toFixed(1)}%
-            </div>
-
-            <div style="
-              font-size:13px;
-              margin-top:8px;
-              color:#66bb6a;
-            ">
-              ${c.strengths.join(' • ')}
-            </div>
-
-            <div style="
-              font-size:13px;
-              margin-top:4px;
-              color:#ef5350;
-            ">
-              ${c.weaknesses.join(' • ')}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    ` : ''}
-
-    <!-- Gaps Section (FIXED VISIBILITY) -->
-    ${aiInsights.gap_analysis ? `
-      <div style="
-        margin-bottom:22px;
-        padding:18px;
-        border-radius:12px;
-        background:rgba(255,152,0,0.08);
-        border:1px solid rgba(255,152,0,0.25);
-      ">
-        <div style="
-          font-size:16px;
-          font-weight:600;
-          color:#ffa726;
-          margin-bottom:10px;
-        ">
-          Growth Gaps
-        </div>
-
-        <div style="
-          font-size:14px;
-          color:var(--text1);
-          line-height:1.6;
-          margin-bottom:10px;
-        ">
-          ${escHtml(aiInsights.gap_analysis.user_vs_market)}
-        </div>
-
-        <ul style="
-          margin:0;
-          padding-left:18px;
-          font-size:13px;
-          color:var(--text2);
-          line-height:1.6;
-        ">
-          ${(aiInsights.gap_analysis.missed_opportunities || []).map(m => `
-            <li>${escHtml(m)}</li>
-          `).join('')}
-        </ul>
-      </div>
-    ` : ''}
-
-    <!-- Action Plan -->
-    ${aiInsights.action_plan ? `
-      <div style="
-        padding:18px;
-        border-radius:12px;
-        background:rgba(76,175,80,0.06);
-        border:1px solid rgba(76,175,80,0.25);
-      ">
-        <div style="
-          font-size:16px;
-          font-weight:600;
-          color:#66bb6a;
-          margin-bottom:12px;
-        ">
-          Action Plan
-        </div>
-
-        <div style="margin-bottom:12px;">
-          <div style="font-size:13px;font-weight:600;color:#ef5350;margin-bottom:4px;">
-            Immediate Priorities
-          </div>
-          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
-            ${(aiInsights.action_plan.do_immediately || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
-          </ul>
-        </div>
-
-        <div style="margin-bottom:12px;">
-          <div style="font-size:13px;font-weight:600;color:#42a5f5;margin-bottom:4px;">
-            Next Phase Improvements
-          </div>
-          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
-            ${(aiInsights.action_plan.next_steps || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
-          </ul>
-        </div>
-
-        <div>
-          <div style="font-size:13px;font-weight:600;color:#26a69a;margin-bottom:4px;">
-            Competitive Advantage Opportunities
-          </div>
-          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);">
-            ${(aiInsights.action_plan.exploit_competitor_weakness || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
-          </ul>
-        </div>
-
-      </div>
-    ` : ''}
-
-  </div>`;
+// ── Reply actions  ← FIX: replyId sent as Number (Long) not string ────
+async function approveReply(btn) {
+  const replyId    = Number(btn.dataset.id);   // ✅ Long on Java side
+  const editedText = document.getElementById('replyText_' + replyId)?.value || null;
+  try {
+    await apiFetch('/api/gmb/reply/approve', 'POST', { replyId, editedText });
+    const row = document.getElementById('reply_' + replyId);
+    if (row) row.innerHTML = '<div class="posted-badge">✓ Reply posted to Google Maps</div>';
+    toast('Reply posted successfully!', 'success');
+  } catch (e) {
+    toast('Failed to post reply: ' + e.message, 'error');
+  }
 }
-      zone.innerHTML = html;
-      // Chart
-      const ctx = document.getElementById('competitiveChart').getContext('2d');
-      document.getElementById('competitiveChart').style.display = 'block';
-      if (window.compChart) window.compChart.destroy();
-      window.compChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: report.map(r=>r.name),
-          datasets: [
-            { label: 'Reviews (Footfall)', data: report.map(r=>r.totalReviews), backgroundColor: '#f5a62388' },
-            { label: 'Rating', data: report.map(r=>r.rating), backgroundColor: '#4ade8088', yAxisID: 'y1' }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Reviews' } },
-            y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'Rating' }, min: 0, max: 5 }
+
+async function regenReply(btn) {
+  const replyId = Number(btn.dataset.id);   // ✅ Long
+  const origText = btn.textContent;
+  btn.textContent = '⏳…'; btn.disabled = true;
+  try {
+    const data = await apiFetch('/api/gmb/reply/regenerate', 'POST', { replyId });
+    const ta   = document.getElementById('replyText_' + replyId);
+    if (ta) ta.value = data.suggestedReply;
+    toast('New reply generated!', 'success');
+  } catch (e) {
+    toast('Regeneration failed: ' + e.message, 'error');
+  } finally {
+    btn.textContent = origText; btn.disabled = false;
+  }
+}
+
+async function rejectReply(btn) {
+  const replyId = Number(btn.dataset.id);   // ✅ Long
+  try {
+    await apiFetch('/api/gmb/reply/reject', 'POST', { replyId });
+    const el = document.getElementById('reply_' + replyId);
+    if (el) el.style.opacity = '0.3';
+    toast('Reply dismissed', '');
+  } catch (e) {
+    toast('Dismiss failed: ' + e.message, 'error');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Competitive Analysis
+// ─────────────────────────────────────────────────────────────────────
+// async function loadCompetitiveReport(forceRefresh = false) {
+//   const zone = document.getElementById('competitiveReportZone');
+//   zone.innerHTML = '<div class="loader"></div>';
+//   document.getElementById('competitiveChart').style.display = 'none';
+
+//   try {
+//     let lat = orgData?.lat, lng = orgData?.lng;
+//     if (!lat || !lng) {
+//       const loc = encodeURIComponent(orgData?.location || 'Noida');
+//       const geo = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + loc).then(r => r.json());
+//       if (geo[0]) { lat = parseFloat(geo[0].lat); lng = parseFloat(geo[0].lon); }
+//     }
+//     if (!lat || !lng) throw new Error('Could not determine your location. Please update your profile.');
+
+//     const res        = await apiFetch('/api/competitive/report', 'POST', {
+//       businessName: orgData.businessName,
+//       lat:          Number(lat),
+//       lng:          Number(lng),
+//       type:         'restaurant',
+//       forceRefresh
+//     });
+//     const report     = res.report || [];
+//     const aiInsights = res.aiInsights || {};
+
+//     if (report == null || report.length === 0) {
+//       zone.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>No competitors found nearby.</p></div>';
+//       return;
+//     }
+
+//     let html = `<table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
+//       <tr style="background:var(--surface)">
+//         <th style="padding:10px 8px;text-align:left">Rank</th>
+//         <th style="padding:10px 8px;text-align:left">Name</th>
+//         <th style="padding:10px 8px;text-align:left">Rating</th>
+//         <th style="padding:10px 8px;text-align:left">Reviews</th>
+//       </tr>
+//       ${report.map((r,i) => `<tr>
+//         <td style="padding:8px">${i+1}</td>
+//         <td style="padding:8px">${escHtml(r.name)}</td>
+//         <td style="padding:8px">${r.rating || '—'}★</td>
+//         <td style="padding:8px">${r.totalReviews}</td>
+//       </tr>`).join('')}
+//     </table>`;
+
+//     if (aiInsights && Object.keys(aiInsights).length) {
+//       html += `
+//       <div style="margin-top:32px;background:var(--surface);border-radius:14px;padding:24px">
+//         <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px">Competitive Intelligence</div>
+//         ${aiInsights.summary ? `<div style="font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px">${escHtml(aiInsights.summary)}</div>` : ''}
+//         ${aiInsights.top_competitor ? `
+//           <div style="margin-bottom:20px;padding:16px;border-radius:10px;background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.25)">
+//             <div style="font-size:13px;font-weight:600;color:#ffb300;margin-bottom:6px">Market Leader</div>
+//             <div style="font-size:15px;color:var(--text);font-weight:600">${escHtml(aiInsights.top_competitor.name)}</div>
+//             <div style="font-size:14px;color:var(--text2);margin-top:4px">${escHtml(aiInsights.top_competitor.why_winning)}</div>
+//           </div>` : ''}
+//         ${(aiInsights.competitor_analysis || []).length ? `
+//           <div style="margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(244,67,54,0.05);border:1px solid rgba(244,67,54,0.2)">
+//             <div style="font-size:16px;font-weight:600;color:#ff6b6b;margin-bottom:12px">Key Competitors</div>
+//             ${aiInsights.competitor_analysis.map(c => `
+//               <div style="margin-bottom:12px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
+//                 <div style="font-size:15px;font-weight:600;color:var(--text)">${escHtml(c.name)}</div>
+//                 <div style="font-size:13px;color:var(--text2);margin-top:6px">Positive ${c.sentiment.positive} · Neutral ${c.sentiment.neutral} · Negative ${c.sentiment.negative} | Growth ${(c.growth_rate*100).toFixed(1)}%</div>
+//                 <div style="font-size:13px;margin-top:8px;color:#66bb6a">${c.strengths.join(' • ')}</div>
+//                 <div style="font-size:13px;margin-top:4px;color:#ef5350">${c.weaknesses.join(' • ')}</div>
+//               </div>`).join('')}
+//           </div>` : ''}
+//         ${aiInsights.gap_analysis ? `
+//           <div style="margin-bottom:22px;padding:18px;border-radius:12px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.25)">
+//             <div style="font-size:16px;font-weight:600;color:#ffa726;margin-bottom:10px">Growth Gaps</div>
+//             <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:10px">${escHtml(aiInsights.gap_analysis.user_vs_market)}</div>
+//             <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);line-height:1.6">
+//               ${(aiInsights.gap_analysis.missed_opportunities || []).map(m => `<li>${escHtml(m)}</li>`).join('')}
+//             </ul>
+//           </div>` : ''}
+//         ${aiInsights.action_plan ? `
+//           <div style="padding:18px;border-radius:12px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.25)">
+//             <div style="font-size:16px;font-weight:600;color:#66bb6a;margin-bottom:12px">Action Plan</div>
+//             <div style="margin-bottom:12px">
+//               <div style="font-size:13px;font-weight:600;color:#ef5350;margin-bottom:4px">Immediate Priorities</div>
+//               <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2)">
+//                 ${(aiInsights.action_plan.do_immediately || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+//               </ul>
+//             </div>
+//             <div style="margin-bottom:12px">
+//               <div style="font-size:13px;font-weight:600;color:#42a5f5;margin-bottom:4px">Next Phase</div>
+//               <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2)">
+//                 ${(aiInsights.action_plan.next_steps || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+//               </ul>
+//             </div>
+//             <div>
+//               <div style="font-size:13px;font-weight:600;color:#26a69a;margin-bottom:4px">Competitive Advantage</div>
+//               <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2)">
+//                 ${(aiInsights.action_plan.exploit_competitor_weakness || []).map(a => `<li>${escHtml(a)}</li>`).join('')}
+//               </ul>
+//             </div>
+//           </div>` : ''}
+//       </div>`;
+//     }
+
+//     zone.innerHTML = html;
+
+//     // Chart
+//     const canvas = document.getElementById('competitiveChart');
+//     canvas.style.display = 'block';
+//     if (window._compChart) window._compChart.destroy();
+//     window._compChart = new Chart(canvas.getContext('2d'), {
+//       type: 'bar',
+//       data: {
+//         labels: report.map(r => r.name),
+//         datasets: [
+//           { label: 'Reviews (Footfall)', data: report.map(r => r.totalReviews), backgroundColor: '#f5a62388' },
+//           { label: 'Rating', data: report.map(r => r.rating), backgroundColor: '#4ade8088', yAxisID: 'y1' }
+//         ]
+//       },
+//       options: {
+//         responsive: true,
+//         scales: {
+//           y:  { beginAtZero: true, title: { display: true, text: 'Reviews' } },
+//           y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'Rating' }, min: 0, max: 5 }
+//         }
+//       }
+//     });
+//   } catch (e) {
+//     zone.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
+//   }
+// }
+async function loadCompetitiveReport(forceRefresh = false) {
+  const zone = document.getElementById('competitiveReportZone');
+  const canvas = document.getElementById('competitiveChart');
+
+  zone.innerHTML = '<div class="loader"></div>';
+  canvas.style.display = 'none';
+
+  try {
+    let lat = orgData?.lat, lng = orgData?.lng;
+
+    // 🌍 Fallback to geocoding
+    if (!lat || !lng) {
+      const loc = encodeURIComponent(orgData?.location || 'Noida');
+      const geo = await fetch(
+        'https://nominatim.openstreetmap.org/search?format=json&q=' + loc
+      ).then(r => r.json());
+
+      if (geo?.[0]) {
+        lat = parseFloat(geo[0].lat);
+        lng = parseFloat(geo[0].lon);
+      }
+    }
+
+    if (!lat || !lng) {
+      throw new Error('Could not determine your location. Please update your profile.');
+    }
+
+    const res = await apiFetch('/api/competitive/report', 'POST', {
+      businessName: orgData.businessName,
+      lat: Number(lat),
+      lng: Number(lng),
+      type: 'restaurant',
+      forceRefresh
+    });
+
+    // ✅ FIXED: correct structure
+    const report = res?.report?.competitors || [];
+    const aiInsights = res?.aiInsights || {};
+
+    // ✅ Defensive check
+    if (!Array.isArray(report) || report.length === 0) {
+      zone.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🏆</div>
+          <p>No competitors found nearby.</p>
+        </div>`;
+      return;
+    }
+
+    // ✅ Sort by review count (real ranking)
+    report.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
+
+    // 📊 TABLE
+    let html = `
+      <table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
+        <tr style="background:var(--surface)">
+          <th style="padding:10px 8px;text-align:left">Rank</th>
+          <th style="padding:10px 8px;text-align:left">Name</th>
+          <th style="padding:10px 8px;text-align:left">Rating</th>
+          <th style="padding:10px 8px;text-align:left">Reviews</th>
+        </tr>
+        ${report.map((r, i) => `
+          <tr>
+            <td style="padding:8px">${i + 1}</td>
+            <td style="padding:8px">${escHtml(r.name)}</td>
+            <td style="padding:8px">${r.rating ?? '—'}★</td>
+            <td style="padding:8px">${r.reviewCount ?? 0}</td>
+          </tr>
+        `).join('')}
+      </table>
+    `;
+
+    // 🤖 AI Insights (only show if meaningful)
+    const hasInsights =
+      aiInsights &&
+      (
+        (aiInsights.summary && aiInsights.summary !== 'AI analysis unavailable') ||
+        aiInsights.top_competitor ||
+        (aiInsights.competitor_analysis?.length > 0) ||
+        aiInsights.gap_analysis ||
+        aiInsights.action_plan
+      );
+
+    if (hasInsights) {
+      html += `
+        <div style="margin-top:32px;background:var(--surface);border-radius:14px;padding:24px">
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px">
+            Competitive Intelligence
+          </div>
+
+          ${aiInsights.summary && aiInsights.summary !== 'AI analysis unavailable'
+            ? `<div style="font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px">
+                ${escHtml(aiInsights.summary)}
+               </div>`
+            : ''}
+
+          ${aiInsights.top_competitor ? `
+            <div style="margin-bottom:20px;padding:16px;border-radius:10px;background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.25)">
+              <div style="font-size:13px;font-weight:600;color:#ffb300;margin-bottom:6px">
+                Market Leader
+              </div>
+              <div style="font-size:15px;font-weight:600">${escHtml(aiInsights.top_competitor.name)}</div>
+              <div style="font-size:14px;color:var(--text2);margin-top:4px">
+                ${escHtml(aiInsights.top_competitor.why_winning)}
+              </div>
+            </div>` : ''}
+
+          ${(aiInsights.competitor_analysis || []).length ? `
+            <div style="margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(244,67,54,0.05);border:1px solid rgba(244,67,54,0.2)">
+              <div style="font-size:16px;font-weight:600;color:#ff6b6b;margin-bottom:12px">
+                Key Competitors
+              </div>
+              ${aiInsights.competitor_analysis.map(c => `
+                <div style="margin-bottom:12px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
+                  <div style="font-size:15px;font-weight:600">${escHtml(c.name)}</div>
+                  <div style="font-size:13px;color:var(--text2);margin-top:6px">
+                    Positive ${c.sentiment?.positive || 0} · 
+                    Neutral ${c.sentiment?.neutral || 0} · 
+                    Negative ${c.sentiment?.negative || 0} | 
+                    Growth ${((c.growth_rate || 0) * 100).toFixed(1)}%
+                  </div>
+                  <div style="font-size:13px;margin-top:8px;color:#66bb6a">
+                    ${(c.strengths || []).join(' • ')}
+                  </div>
+                  <div style="font-size:13px;margin-top:4px;color:#ef5350">
+                    ${(c.weaknesses || []).join(' • ')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>` : ''}
+
+          ${aiInsights.gap_analysis ? `
+            <div style="margin-bottom:22px;padding:18px;border-radius:12px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.25)">
+              <div style="font-size:16px;font-weight:600;color:#ffa726;margin-bottom:10px">
+                Growth Gaps
+              </div>
+              <div style="font-size:14px;line-height:1.6;margin-bottom:10px">
+                ${escHtml(aiInsights.gap_analysis.user_vs_market || '')}
+              </div>
+              <ul style="padding-left:18px;font-size:13px;color:var(--text2)">
+                ${(aiInsights.gap_analysis.missed_opportunities || [])
+                  .map(m => `<li>${escHtml(m)}</li>`).join('')}
+              </ul>
+            </div>` : ''}
+
+          ${aiInsights.action_plan ? `
+            <div style="padding:18px;border-radius:12px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.25)">
+              <div style="font-size:16px;font-weight:600;color:#66bb6a;margin-bottom:12px">
+                Action Plan
+              </div>
+
+              ${['do_immediately', 'next_steps', 'exploit_competitor_weakness'].map((key, idx) => {
+                const titles = ['Immediate Priorities', 'Next Phase', 'Competitive Advantage'];
+                const colors = ['#ef5350', '#42a5f5', '#26a69a'];
+
+                if (!aiInsights.action_plan[key]?.length) return '';
+
+                return `
+                  <div style="margin-bottom:12px">
+                    <div style="font-size:13px;font-weight:600;color:${colors[idx]}">
+                      ${titles[idx]}
+                    </div>
+                    <ul style="padding-left:18px;font-size:13px;color:var(--text2)">
+                      ${aiInsights.action_plan[key].map(a => `<li>${escHtml(a)}</li>`).join('')}
+                    </ul>
+                  </div>`;
+              }).join('')}
+            </div>` : ''}
+        </div>
+      `;
+    }
+
+    zone.innerHTML = html;
+
+    // 📊 CHART
+    canvas.style.display = 'block';
+
+    if (window._compChart) {
+      window._compChart.destroy();
+    }
+
+    window._compChart = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: report.map(r => `${r.name} (${r.rating ?? '—'}★)`),
+        datasets: [
+          {
+            label: 'Reviews (Footfall)',
+            data: report.map(r => r.reviewCount || 0),
+            backgroundColor: '#f5a62388'
+          },
+          {
+            label: 'Rating',
+            data: report.map(r => r.rating || 0),
+            backgroundColor: '#4ade8088',
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Reviews' }
+          },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            min: 0,
+            max: 5,
+            title: { display: true, text: 'Rating' }
           }
         }
-      });
-    } catch(e) {
-      zone.innerHTML = `<div class="empty"><p style="color:#f87171">${escHtml(e.message)}</p></div>`;
-    }
-  }
-  
-</script>
+      }
+    });
 
-<!-- EXTENSIONS: Only once, after all logic is defined -->
-<script>
-// Extend init to check GMB status
-{
-  const _origInit = window.init;
-  async function init() {
-    await _origInit.call(this);
-    checkOAuthResult();
-    // Check if org has GMB connected
-    try {
-      const res = await apiFetch('/api/auth/me');
-      db_gmbConnected = res.org?.gmbConnected || false;
-    } catch(_) {}
+  } catch (e) {
+    zone.innerHTML = `
+      <div class="empty">
+        <p style="color:#f87171">${escHtml(e.message)}</p>
+      </div>`;
   }
-  window.init = init;
 }
 
-// Extend showPanel to init business and competitive panels
-{
-  const _origShowPanel = window.showPanel;
-  function showPanel(name, navEl) {
-    _origShowPanel(name, navEl);
-    if (name === 'business') {
-      if (db_gmbConnected) { showGmbConnected(); loadAccounts(); }
-      else showGmbNotConnected();
-    }
-    if (name === 'competitive') {
-      loadCompetitiveReport(false);
-    }
-  }
-  window.showPanel = showPanel;
-}
+// ─────────────────────────────────────────────────────────────────────
+// Expose to HTML onclick attributes (required for type="module" scope)
+// ─────────────────────────────────────────────────────────────────────
+window.toggleSidebar        = toggleSidebar;
+window.closeSidebar         = closeSidebar;
+window.showPanel            = showPanel;
+window.toggleDigest         = toggleDigest;
+window.generateDigest       = generateDigest;
+window.saveSettings         = saveSettings;
+window.doLogout             = doLogout;
+window.connectGoogle        = connectGoogle;
+window.disconnectGoogle     = disconnectGoogle;
+window.loadAccounts         = loadAccounts;
+window.selectAccount        = selectAccount;
+window.backToAccounts       = backToAccounts;
+window.selectLocation       = selectLocation;
+window.backToLocations      = backToLocations;
+window.loadReviews          = loadReviews;
+window.switchReviewTab      = switchReviewTab;
+window.approveReply         = approveReply;
+window.regenReply           = regenReply;
+window.rejectReply          = rejectReply;
+window.loadCompetitiveReport= loadCompetitiveReport;
+window.toast                = toast;
 
-// Call the new init
-window.init();
+// ─────────────────────────────────────────────────────────────────────
+// Start
+// ─────────────────────────────────────────────────────────────────────
+init();
 </script>
-</script>
-<!-- Chart.js CDN for competitive chart -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>
