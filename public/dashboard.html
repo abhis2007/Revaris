@@ -1059,7 +1059,8 @@ async function loadCompetitiveReport(forceRefresh = false) {
       throw new Error('Could not determine your location. Please update your profile.');
     }
 
-    const res = await apiFetch('/api/competitive/report', 'POST', {
+    // const res = await apiFetch('/api/competitive/report', 'POST', {
+    const res = await apiFetch('/api/v1/insights/growth', 'POST', {
       businessName: orgData.businessName,
       lat: Number(lat),
       lng: Number(lng),
@@ -1068,186 +1069,167 @@ async function loadCompetitiveReport(forceRefresh = false) {
     });
 
     // ✅ FIXED: correct structure
-    const report = res?.report?.competitors || [];
-    const aiInsights = res?.aiInsights || {};
+    const growth = res || [];
+    let html = "";
+    if (growth && growth.summary) {
+    html = `
+      <div style="margin-top:32px">
 
-    // ✅ Defensive check
-    if (!Array.isArray(report) || report.length === 0) {
-      zone.innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">🏆</div>
-          <p>No competitors found nearby.</p>
-        </div>`;
-      return;
-    }
+        <!-- 🔥 SUMMARY -->
+        <div style="background:var(--surface);padding:20px;border-radius:14px;margin-bottom:20px">
+          <div style="font-size:18px;font-weight:700">${escHtml(growth.summary.headline)}</div>
+          <div style="margin-top:10px;font-size:13px;color:var(--text2)">
+            Demand Score: <b>${growth.summary.demand_score}</b> · 
+            Local Rank: <b>#${growth.summary.rank_nearby}</b>
+          </div>
+        </div>
 
-    // ✅ Sort by review count (real ranking)
-    report.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
+        <!-- 💸 LOSS ANALYSIS -->
+        <div style="background:rgba(244,67,54,0.06);border:1px solid rgba(244,67,54,0.2);padding:18px;border-radius:12px;margin-bottom:20px">
+          <div style="font-size:16px;font-weight:600;color:#ff6b6b;margin-bottom:12px">
+            Revenue Leak
+          </div>
+          ${growth.loss_analysis.map(l => `
+            <div style="font-size:14px;margin-bottom:8px">
+              ${escHtml(l.reason)} → 
+              <b style="color:#ff5252">${l.estimated_loss_percent}% loss</b>
+            </div>
+          `).join('')}
+        </div>
 
-    // 📊 TABLE
-    let html = `
-      <table style="width:100%;margin-top:18px;background:var(--bg2);border-radius:10px;overflow:hidden">
-        <tr style="background:var(--surface)">
-          <th style="padding:10px 8px;text-align:left">Rank</th>
-          <th style="padding:10px 8px;text-align:left">Name</th>
-          <th style="padding:10px 8px;text-align:left">Rating</th>
-          <th style="padding:10px 8px;text-align:left">Reviews</th>
-        </tr>
-        ${report.map((r, i) => `
-          <tr>
-            <td style="padding:8px">${i + 1}</td>
-            <td style="padding:8px">${escHtml(r.name)}</td>
-            <td style="padding:8px">${r.rating ?? '—'}★</td>
-            <td style="padding:8px">${r.reviewCount ?? 0}</td>
-          </tr>
-        `).join('')}
-      </table>
-    `;
-
-    // 🤖 AI Insights (only show if meaningful)
-    const hasInsights =
-      aiInsights &&
-      (
-        (aiInsights.summary && aiInsights.summary !== 'AI analysis unavailable') ||
-        aiInsights.top_competitor ||
-        (aiInsights.competitor_analysis?.length > 0) ||
-        aiInsights.gap_analysis ||
-        aiInsights.action_plan
-      );
-
-    if (hasInsights) {
-      html += `
-        <div style="margin-top:32px;background:var(--surface);border-radius:14px;padding:24px">
-          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px">
-            Competitive Intelligence
+        <!-- ⚡ ACTION CARDS -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:16px;font-weight:600;margin-bottom:12px">
+            Growth Actions
           </div>
 
-          ${aiInsights.summary && aiInsights.summary !== 'AI analysis unavailable'
-            ? `<div style="font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px">
-                ${escHtml(aiInsights.summary)}
-               </div>`
-            : ''}
-
-          ${aiInsights.top_competitor ? `
-            <div style="margin-bottom:20px;padding:16px;border-radius:10px;background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.25)">
-              <div style="font-size:13px;font-weight:600;color:#ffb300;margin-bottom:6px">
-                Market Leader
+          ${growth.action_cards.map(a => `
+            <div style="padding:16px;border-radius:12px;background:var(--surface);margin-bottom:12px;border-left:4px solid #66bb6a">
+              <div style="font-weight:600">${escHtml(a.title)}</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:4px">
+                ${escHtml(a.insight)}
               </div>
-              <div style="font-size:15px;font-weight:600">${escHtml(aiInsights.top_competitor.name)}</div>
-              <div style="font-size:14px;color:var(--text2);margin-top:4px">
-                ${escHtml(aiInsights.top_competitor.why_winning)}
+              <div style="margin-top:6px;font-size:14px">
+                👉 ${escHtml(a.action)}
               </div>
-            </div>` : ''}
-
-          ${(aiInsights.competitor_analysis || []).length ? `
-            <div style="margin-bottom:24px;padding:18px;border-radius:12px;background:rgba(244,67,54,0.05);border:1px solid rgba(244,67,54,0.2)">
-              <div style="font-size:16px;font-weight:600;color:#ff6b6b;margin-bottom:12px">
-                Key Competitors
+              <div style="margin-top:6px;font-size:13px;color:#66bb6a">
+                ${escHtml(a.impact)}
               </div>
-              ${aiInsights.competitor_analysis.map(c => `
-                <div style="margin-bottom:12px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
-                  <div style="font-size:15px;font-weight:600">${escHtml(c.name)}</div>
-                  <div style="font-size:13px;color:var(--text2);margin-top:6px">
-                    Positive ${c.sentiment?.positive || 0} · 
-                    Neutral ${c.sentiment?.neutral || 0} · 
-                    Negative ${c.sentiment?.negative || 0} | 
-                    Growth ${((c.growth_rate || 0) * 100).toFixed(1)}%
-                  </div>
-                  <div style="font-size:13px;margin-top:8px;color:#66bb6a">
-                    ${(c.strengths || []).join(' • ')}
-                  </div>
-                  <div style="font-size:13px;margin-top:4px;color:#ef5350">
-                    ${(c.weaknesses || []).join(' • ')}
-                  </div>
-                </div>
-              `).join('')}
-            </div>` : ''}
-
-          ${aiInsights.gap_analysis ? `
-            <div style="margin-bottom:22px;padding:18px;border-radius:12px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.25)">
-              <div style="font-size:16px;font-weight:600;color:#ffa726;margin-bottom:10px">
-                Growth Gaps
-              </div>
-              <div style="font-size:14px;line-height:1.6;margin-bottom:10px">
-                ${escHtml(aiInsights.gap_analysis.user_vs_market || '')}
-              </div>
-              <ul style="padding-left:18px;font-size:13px;color:var(--text2)">
-                ${(aiInsights.gap_analysis.missed_opportunities || [])
-                  .map(m => `<li>${escHtml(m)}</li>`).join('')}
-              </ul>
-            </div>` : ''}
-
-          ${aiInsights.action_plan ? `
-            <div style="padding:18px;border-radius:12px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.25)">
-              <div style="font-size:16px;font-weight:600;color:#66bb6a;margin-bottom:12px">
-                Action Plan
-              </div>
-
-              ${['do_immediately', 'next_steps', 'exploit_competitor_weakness'].map((key, idx) => {
-                const titles = ['Immediate Priorities', 'Next Phase', 'Competitive Advantage'];
-                const colors = ['#ef5350', '#42a5f5', '#26a69a'];
-
-                if (!aiInsights.action_plan[key]?.length) return '';
-
-                return `
-                  <div style="margin-bottom:12px">
-                    <div style="font-size:13px;font-weight:600;color:${colors[idx]}">
-                      ${titles[idx]}
-                    </div>
-                    <ul style="padding-left:18px;font-size:13px;color:var(--text2)">
-                      ${aiInsights.action_plan[key].map(a => `<li>${escHtml(a)}</li>`).join('')}
-                    </ul>
-                  </div>`;
-              }).join('')}
-            </div>` : ''}
+            </div>
+          `).join('')}
         </div>
-      `;
-    }
 
+        <!-- 🧱 COMPETITORS (BOXED AS YOU ASKED) -->
+        <div style="margin-bottom:20px;padding:18px;border-radius:12px;
+                    background:rgba(255,82,82,0.05);
+                    border:1px solid rgba(255,82,82,0.25)">
+          <div style="font-size:16px;font-weight:600;color:#ff5252;margin-bottom:12px">
+            Key Competitors
+          </div>
+
+          ${growth.competitors.map(c => `
+            <div style="margin-bottom:12px;padding:14px;border-radius:10px;background:var(--surface)">
+              <div style="font-weight:600">${escHtml(c.name)}</div>
+              <div style="font-size:13px;color:var(--text2)">
+                Growth Score: ${c.growth_rate}
+              </div>
+              <div style="font-size:13px;color:#66bb6a;margin-top:4px">
+                Strength: ${escHtml(c.strength)}
+              </div>
+              <div style="font-size:13px;color:#ef5350">
+                Weakness: ${escHtml(c.weakness)}
+              </div>
+              <div style="font-size:13px;margin-top:4px">
+                🎯 Opportunity: ${escHtml(c.opportunity)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- ⚡ QUICK WINS -->
+        <div style="margin-bottom:20px;padding:18px;border-radius:12px;
+                    background:rgba(76,175,80,0.05);
+                    border:1px solid rgba(76,175,80,0.2)">
+          <div style="font-size:16px;font-weight:600;color:#66bb6a;margin-bottom:10px">
+            Quick Wins (Do Today)
+          </div>
+          <ul style="padding-left:18px;font-size:13px">
+            ${growth.quick_wins.map(q => `<li>${escHtml(q)}</li>`).join('')}
+          </ul>
+        </div>
+
+        <!-- 📅 GROWTH PLAN -->
+        <div style="padding:18px;border-radius:12px;background:var(--surface)">
+          <div style="font-size:16px;font-weight:600;margin-bottom:12px">
+            Execution Plan
+          </div>
+
+          <div style="margin-bottom:10px">
+            <div style="font-size:13px;font-weight:600;color:#42a5f5">
+              This Week
+            </div>
+            <ul style="padding-left:18px;font-size:13px">
+              ${growth.growth_plan.this_week.map(t => `<li>${escHtml(t)}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#ffa726">
+              Next 30 Days
+            </div>
+            <ul style="padding-left:18px;font-size:13px">
+              ${growth.growth_plan.next_30_days.map(t => `<li>${escHtml(t)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
     zone.innerHTML = html;
 
     // 📊 CHART
-    canvas.style.display = 'block';
+    // canvas.style.display = 'block';
 
-    if (window._compChart) {
-      window._compChart.destroy();
-    }
+    // if (window._compChart) {
+    //   window._compChart.destroy();
+    // }
 
-    window._compChart = new Chart(canvas.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: report.map(r => `${r.name} (${r.rating ?? '—'}★)`),
-        datasets: [
-          {
-            label: 'Reviews (Footfall)',
-            data: report.map(r => r.reviewCount || 0),
-            backgroundColor: '#f5a62388'
-          },
-          {
-            label: 'Rating',
-            data: report.map(r => r.rating || 0),
-            backgroundColor: '#4ade8088',
-            yAxisID: 'y1'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: 'Reviews' }
-          },
-          y1: {
-            beginAtZero: true,
-            position: 'right',
-            min: 0,
-            max: 5,
-            title: { display: true, text: 'Rating' }
-          }
-        }
-      }
-    });
+    // window._compChart = new Chart(canvas.getContext('2d'), {
+    //   type: 'bar',
+    //   data: {
+    //     labels: report.map(r => `${r.name} (${r.rating ?? '—'}★)`),
+    //     datasets: [
+    //       {
+    //         label: 'Reviews (Footfall)',
+    //         data: report.map(r => r.reviewCount || 0),
+    //         backgroundColor: '#f5a62388'
+    //       },
+    //       {
+    //         label: 'Rating',
+    //         data: report.map(r => r.rating || 0),
+    //         backgroundColor: '#4ade8088',
+    //         yAxisID: 'y1'
+    //       }
+    //     ]
+    //   },
+    //   options: {
+    //     responsive: true,
+    //     scales: {
+    //       y: {
+    //         beginAtZero: true,
+    //         title: { display: true, text: 'Reviews' }
+    //       },
+    //       y1: {
+    //         beginAtZero: true,
+    //         position: 'right',
+    //         min: 0,
+    //         max: 5,
+    //         title: { display: true, text: 'Rating' }
+    //       }
+    //     }
+    //   }
+    // });
 
   } catch (e) {
     zone.innerHTML = `
