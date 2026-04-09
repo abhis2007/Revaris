@@ -1,5 +1,3 @@
-// vercel.json
-// This configuration rewrites /login to /login.html
 {
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
