@@ -1,0 +1,9 @@
+// vercel.json
+// This configuration rewrites /login to /login.html
+{
+  "rewrites": [
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" }
+  ]
+}
